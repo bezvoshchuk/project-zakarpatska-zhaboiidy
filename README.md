@@ -1,2 +1,2 @@
-# project-zakarpatska-zhaboiidy
+# 🐍 project-zakarpatski-zhaboiidy
 Group 1 team project
