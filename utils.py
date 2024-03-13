@@ -3,12 +3,13 @@ from __future__ import annotations
 from collections import defaultdict
 import datetime
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from datamodels import Record
 
 
 def get_birthdays_per_week(
-        users_data: list[Record],
+    users_data: list[Record],
 ) -> dict[str, list[Record]]:
     """This function will return dictionary with all users that have birthday in following week.
 
@@ -20,11 +21,8 @@ def get_birthdays_per_week(
     """
     # Initial values and consts
     result = defaultdict(list)
-    next_monday_date = (
-        datetime.datetime.today().date() +
-        datetime.timedelta(
-            days=(7 - datetime.datetime.today().date().weekday()) % 7
-        )
+    next_monday_date = datetime.datetime.today().date() + datetime.timedelta(
+        days=(7 - datetime.datetime.today().date().weekday()) % 7
     )
 
     for record in users_data:
@@ -36,7 +34,7 @@ def get_birthdays_per_week(
 
         # Advance by one year if birthday already passed
         if next_monday_date > birthday_date:
-            birthday_date = birthday_date.replace(year=next_monday_date.year+1)
+            birthday_date = birthday_date.replace(year=next_monday_date.year + 1)
 
         # If birthday is within the week, add to result
         if (birthday_date - next_monday_date).days < 7:

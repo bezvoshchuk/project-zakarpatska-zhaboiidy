@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 from functools import wraps
 
-from datamodels import AddressBookReader, AddressBook, Record
+from datamodels import AddressBookReader, AddressBook, Record, NotesBook, Note
 
 
 class BaseCliHelperException(Exception):
@@ -32,13 +32,15 @@ def input_error(error_msg_base):
                 return f"{error_msg_base}: {e}"
 
         return wrapper
+
     return decorator
 
 
 class CliHelperBot:
     _address_book: AddressBook = None
+    _notes_book: NotesBook = None
 
-    def __init__(self, address_book: AddressBook):
+    def __init__(self, address_book: AddressBook, notes_book: NotesBook):
         self.supported_commands = {
             "close": self.stop,
             "exit": self.stop,
@@ -52,8 +54,10 @@ class CliHelperBot:
             "birthdays": self.birthdays,
             "add-address": self.add_address,
             "add-email": self.add_email,
+            "add-note": self.add_note,
         }
         self._address_book = address_book
+        self._notes_book = notes_book
 
     def stop(self, message: str):
         """Stop the bot execution.
@@ -140,12 +144,7 @@ class CliHelperBot:
             )
 
         username, phone = args
-        record = self._address_book.add_record(
-            Record(
-                name_=username,
-                phones=[phone]
-            )
-        )
+        record = self._address_book.add_record(Record(name_=username, phones=[phone]))
 
         if record is None:
             raise CommandOperationalError(
@@ -269,7 +268,7 @@ class CliHelperBot:
 
         command_output += "Contacts per day: "
         for week_day, records in self._address_book.get_birthdays_per_week().items():
-            records_str = '\n'.join(str(r) for r in records)
+            records_str = "\n".join(str(r) for r in records)
             command_output += f"\nHave BD on {week_day}:\n {records_str}"
 
         return command_output
@@ -335,7 +334,7 @@ class CliHelperBot:
 
         record.add_address(address_str)
         return f"Contact {username} updated with address: {address_str}."
-    
+
     @input_error(error_msg_base="Command 'add-email' failed")
     def add_email(self, *args: str):
         """Add email to already existing record.
@@ -368,10 +367,42 @@ class CliHelperBot:
         record.add_email(email_str)
         return f"Contact {username} updated with email: {email_str}."
 
+    @input_error(error_msg_base="Command 'add-note' failed")
+    def add_note(self, *args: str) -> str:
+        """Add note into Notes Book.
+
+        Args:
+            args: List note name and project role to add.
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or user already exist
+        """
+        if len(args) != 2:
+            raise CommandOperationalError(
+                "command expects an input of two arguments: name and project role, separated by a space. "
+                f"Received: {' '.join(args)}"
+            )
+
+        name, project_role = args
+        note = self._notes_book.add_note(Note(name_=name, project_role=project_role))
+
+        if note is None:
+            raise CommandOperationalError(
+                f"Note {name} already exist. "
+                f"If you want to update project role, please use 'change-project-role' command."
+            )
+
+        return f"Created note {name} {project_role}."
+
     def main(self) -> None:
         while True:
             try:
-                user_input = input("Enter a command with arguments separated with a ' ' character: ")
+                user_input = input(
+                    "Enter a command with arguments separated with a ' ' character: "
+                )
 
                 command, args = self.parse_input(user_input)
                 command_output = self.execute_command(command, args)
