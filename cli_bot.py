@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 from functools import wraps
 
@@ -46,6 +47,7 @@ class CliHelperBot:
             "add": self.add_contact,
             "change": self.change_contact,
             "phone": self.get_contact,
+            "search": self.search_contact,
             "all": self.print_all_contacts,
             "add-birthday": self.add_birthday,
             "show-birthday": self.show_birthday,
@@ -216,6 +218,37 @@ class CliHelperBot:
             ) from e
 
         return f"User's {username} birthday is: {record.birthday}"
+
+    @input_error(error_msg_base="Command 'search' failed")
+    def search_contact(self, *args: str) -> str:
+        """Search user data by search query.
+
+        Args:
+            args: List of one argument - search query
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments
+        """
+        if len(args) != 1:
+            raise CommandOperationalError(
+                "command expects an input of one argument: search query. "
+                f"Received: {' '.join(args)}"
+            )
+
+        query = args[0]
+        records = self._address_book.search(query)
+
+        if not records:
+            return "No records found with provided query."
+
+        command_output = "Found Records: "
+        for record in records:
+            command_output += f"\n{record}"
+
+        return command_output
 
     @input_error(error_msg_base="Command 'phone' failed")
     def get_contact(self, *args: str) -> str:
