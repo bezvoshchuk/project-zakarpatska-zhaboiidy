@@ -1,4 +1,6 @@
 from __future__ import annotations
+from typing import List
+
 
 import argparse
 import datetime
@@ -471,6 +473,25 @@ class NotesBook(UserDict):
             raise KeyError(f"Note for {project_role_} was not found.")
 
         return project_role_note
+
+    def find_hobby(self, hobby_: str) -> List[Note]:
+        """Find a notes in the notes book by hobby.
+
+        Args:
+            hobby_: Hobby role of to find.
+
+        Raises:
+            KeyError: if note doesn't exist.
+        """
+        hobby_notes = []
+        for note in self.data:
+            if hobby_ in note["hobbies"]:
+                hobby_notes.append(note)
+
+        if len(hobby_notes) == 0:
+            raise KeyError(f"Notes with {hobby_} were not found.")
+
+        return hobby_notes
 
     def delete(self, name_: str) -> None:
         """Delete a note in the notes book by name.
