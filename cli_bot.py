@@ -8,7 +8,7 @@ from typing import Any
 from functools import wraps
 
 from autocomplete import get_autocomplete, style
-from datamodels import AddressBookReader, AddressBook, Record
+from datamodels import AddressBookReader, AddressBook, Record, NotesBook, Note
 
 
 class BaseCliHelperException(Exception):
@@ -43,8 +43,9 @@ def input_error(error_msg_base):
 
 class CliHelperBot:
     _address_book: AddressBook = None
+    _notes_book: NotesBook = None
 
-    def __init__(self, address_book: AddressBook):
+    def __init__(self, address_book: AddressBook, notes_book: NotesBook):
         self.supported_commands = {
             "close": self.stop,
             "exit": self.stop,
@@ -59,6 +60,7 @@ class CliHelperBot:
             "birthdays": self.birthdays,
             "add-address": self.add_address,
             "add-email": self.add_email,
+            "add-note": self.add_note,
             "delete-contact": self.delete_contact,
             "delete-email": self.delete_email,
             "delete-phone": self.delete_phone,
@@ -70,6 +72,7 @@ class CliHelperBot:
             "help": self.help,
         }
         self._address_book = address_book
+        self._notes_book = notes_book
 
     def help(self, *args: str) -> str:
         """Outputs a help message for user."""
@@ -450,6 +453,36 @@ class CliHelperBot:
 
         record.add_email(email_str)
         return f"Contact {username} updated with email: {email_str}."
+
+    @input_error(error_msg_base="Command 'add-note' failed")
+    def add_note(self, *args: str) -> str:
+        """Add note into Notes Book.
+
+        Args:
+            args: List note name and project role to add.
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or user already exist
+        """
+        if len(args) != 2:
+            raise CommandOperationalError(
+                "command expects an input of two arguments: name and project role, separated by a space. "
+                f"Received: {' '.join(args)}"
+            )
+
+        name, project_role = args
+        note = self._notes_book.add_note(Note(name_=name, project_role=project_role))
+
+        if note is None:
+            raise CommandOperationalError(
+                f"Note {name} already exist. "
+                f"If you want to update project role, please use 'change-project-role' command."
+            )
+
+        return f"Created note {name} {project_role}."
 
     @input_error(error_msg_base="Command 'delete-contact' failed")
     def delete_contact(self, *args: str):

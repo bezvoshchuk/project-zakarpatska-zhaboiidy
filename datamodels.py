@@ -14,6 +14,7 @@ from utils import get_birthdays_per_days
 
 DATE_FORMAT = "%Y.%m.%d"
 JSON_DB_PATH = "./users.json"
+NOTES_JSON_DB_PATH = "./notes.json"
 
 
 argument_parser = argparse.ArgumentParser(
@@ -478,7 +479,7 @@ class Note:
         self,
         name_: str,
         project_role: str,
-        project_tasks: str,
+        project_tasks: str = None,
         hobbies: list[str] = None,
     ):
         self.name: Name = Name(name_)
@@ -658,3 +659,35 @@ class NotesBook(UserDict):
         """
 
         del self.data[name_]
+
+
+class NotesBookReader:
+    notes_book: None | NotesBook = None
+
+    def __enter__(self):
+        self.notes_book = NotesBook()
+        self.load_existing_notes()
+        return self.notes_book
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.save_existing_notes()
+
+    def load_existing_notes(self):
+        """Load existing data from NOTES_JSON_DB_PATH, fallback to empty list, if file not present."""
+        notes_data = []
+
+        try:
+            print("Loading existing notes data ...")
+            json_in = open(NOTES_JSON_DB_PATH, "r")
+            notes_data = json.load(json_in)
+            json_in.close()
+        except FileNotFoundError:
+            print("Notes data file don't exist, returning empty list ...")
+
+        self.notes_book.load_data_from_json(notes_data)
+
+    def save_existing_notes(self):
+        """Save existing notes data to NOTES_JSON_DB_PATH."""
+        with open(NOTES_JSON_DB_PATH, "w") as json_out:
+            print("Saving existing notes data ...")
+            json.dump(self.notes_book.dump_data_to_json(), json_out)
