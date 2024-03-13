@@ -6,6 +6,7 @@ from collections import UserDict
 from datetime import date
 import json
 import warnings
+import re
 
 
 from utils import get_birthdays_per_week
@@ -96,8 +97,27 @@ class Address(Field):
         super().__init__(value=address)
 
 
+class Email(Field):
+    def __init__(self, email: str):
+        validated_email = self.validate_email(email)
+        super().__init__(value=validated_email)
+
+    @staticmethod
+    def validate_email(email: str):
+        """Validate email, raises ValueError if email is not valid"""
+        try:
+            pattern = r'^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$'
+            if re.match(pattern, email):
+                return email
+            else:
+                raise ValueError
+
+        except ValueError as e:
+            raise ValueError(f"Email is not valid, entered: {email}") from e
+
+
 class Record:
-    def __init__(self, name_: str, phones: list[str] = None, birthday: date = None, address: date = None):
+    def __init__(self, name_: str, phones: list[str] = None, birthday: date = None, address: date = None, email: date = None):
         self.name: Name = Name(name_)
         self.phones: list[Phone] = [
             Phone(phone) for phone in (phones or [])
@@ -106,6 +126,9 @@ class Record:
             Birthday(birthday) if birthday is not None else None
         )
         self.address: Address = Address(address)
+        self.email = (
+            Email(email) if email is not None else None
+        )
 
     def add_birthday(self, birthday_str: str):
         """Add birthday to record, overwrite if already exists."""
@@ -172,6 +195,10 @@ class Record:
         """Add address to record, overwrite if already exists."""
         self.address = Address(address_str)
 
+    def add_email(self, email_str: str):
+        """Add email to record, overwrite if already exists."""
+        self.email = Email(email_str)
+
     def __str__(self):
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
 
@@ -195,7 +222,8 @@ class AddressBook(UserDict):
                 "name_": _record.name.value,
                 "phones": [phone.value for phone in _record.phones],
                 "birthday": str(_record.birthday),
-                "address": str(_record.address)
+                "address": str(_record.address),
+                "email": str(_record.email)
             }
             for _record in self.data.values()
         ]
