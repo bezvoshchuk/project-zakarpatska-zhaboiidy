@@ -350,6 +350,89 @@ class AddressBook(UserDict):
         # The input query is a name or an email
         return self.search_by_name_or_email(query)
 
+    def search_by_number(self, number_query: str) -> list[Record]:
+        """Find all records in address book by number query.
+
+        Args:
+            number_query: Number search term
+
+        Returns:
+            All matched records if any.
+        """
+        results = [
+            record for record in self.data.values()
+            if record.search_phone(number_query)
+        ]
+
+        # Advanced search will make too much false positives if input term is too short.
+        if not results and len(number_query) > 3:
+            results = set()
+
+            for char in number_query:
+                # Replace a single search character with any digit to account for input error
+                updated_query = number_query.replace(char, r"\d")
+                results.update([
+                    record for record in self.data.values()
+                    if record.search_phone(updated_query)
+                ])
+
+        return list(results)
+
+    def search_by_name_or_email(self, query: str):
+        """Find all records in address book by number query.
+
+        Args:
+            query: Search term
+
+        Returns:
+            All matched records if any.
+        """
+        results = [
+            record for record in self.data.values()
+            if (
+                query in record.name.value
+                or query in record.email.value
+            )
+        ]
+
+        # Advanced search will make too much false positives if input term is too short.
+        if not results and len(query) > 3:
+            results = set()
+
+            try:
+                re.compile(query)
+            except re.error:
+                # String cannot be used as a regex pattern, because of some bad characters.
+                return []
+
+            for char in query:
+                updated_query = query.replace(char, ".")
+                results.update([
+                    record for record in self.data.values()
+                    if (
+                        re.search(updated_query, record.name.value) is not None
+                        or re.search(updated_query, record.email.value) is not None
+                    )
+                ])
+
+        return list(results)
+
+    def search(self, query: str) -> list[Record]:
+        """Find all records in address book that meet search criteria.
+
+        Args:
+            query: Username of the user to find.
+
+        Returns:
+            A list of all found records.
+        """
+        # The input query is a number
+        if len(query) <= 10 and all(c.isdigit() for c in query):
+            return self.search_by_number(query)
+
+        # The input query is a name or an email
+        return self.search_by_name_or_email(query)
+
     def find(self, name_: str) -> Record:
         """Find a record in address book by username.
 
