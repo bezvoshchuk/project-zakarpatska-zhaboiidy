@@ -50,6 +50,7 @@ class CliHelperBot:
             "add-birthday": self.add_birthday,
             "show-birthday": self.show_birthday,
             "birthdays": self.birthdays,
+            "add-address": self.add_address,
         }
         self._address_book = address_book
 
@@ -301,6 +302,38 @@ class CliHelperBot:
 
         command_handler = self.supported_commands[command]
         return command_handler(*args)
+
+    @input_error(error_msg_base="Command 'add-address' failed")
+    def add_address(self, *args: str):
+        """Add address to already existing record.
+
+        Args:
+            args: List with username and address.
+
+        Returns:
+            Command output
+
+        Raises:
+            CommandOperationalError if user does not exist.
+            ValueError if date is invalid.
+        """
+        if len(args) != 2:
+            raise CommandOperationalError(
+                "command expects an input of two arguments: username and address, separated by a space. "
+                f"Received: {' '.join(args)}"
+            )
+        username, address_str = args
+        try:
+            record = self._address_book.find(username)
+
+        except KeyError as e:
+            raise CommandOperationalError(
+                f"user with username {username} doesn't exist. "
+                f"If you want to add address, please use 'add-address' command."
+            ) from e
+
+        record.add_address(address_str)
+        return f"Contact {username} updated with address: {address_str}."
 
     def main(self) -> None:
         while True:
