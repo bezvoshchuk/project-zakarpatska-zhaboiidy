@@ -29,7 +29,7 @@ argument_parser.add_argument(
     type=str,
     default=False,
     required=False,
-    help="Set this to true if you want to switch to db mode."
+    help="Set this to true if you want to switch to db mode.",
 )
 argument_parser.add_argument(
     "--reset_data",
@@ -37,7 +37,7 @@ argument_parser.add_argument(
     type=str,
     default=False,
     required=False,
-    help="Set this to true if you want to reset db data."
+    help="Set this to true if you want to reset db data.",
 )
 
 
@@ -64,7 +64,9 @@ class Birthday(Field):
         try:
             return datetime.datetime.strptime(date_str, DATE_FORMAT).date()
         except Exception:
-            raise ValueError(f"Provided date {date_str} should follow format {DATE_FORMAT}, aborting ...")
+            raise ValueError(
+                f"Provided date {date_str} should follow format {DATE_FORMAT}, aborting ..."
+            )
 
     def __str__(self):
         return self.value.strftime(DATE_FORMAT)
@@ -89,7 +91,7 @@ class Phone(Field):
             raise ValueError(f"Phone should have 10 digits, entered: {phone}") from e
 
         return phone
-    
+
 
 class Address(Field):
     def __init__(self, address: str):
@@ -106,7 +108,7 @@ class Email(Field):
     def validate_email(email: str):
         """Validate email, raises ValueError if email is not valid"""
         try:
-            pattern = r'^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$'
+            pattern = r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$"
             if re.match(pattern, email):
                 return email
             else:
@@ -117,18 +119,19 @@ class Email(Field):
 
 
 class Record:
-    def __init__(self, name_: str, phones: list[str] = None, birthday: date = None, address: date = None, email: date = None):
+    def __init__(
+        self,
+        name_: str,
+        phones: list[str] = None,
+        birthday: date = None,
+        address: date = None,
+        email: date = None,
+    ):
         self.name: Name = Name(name_)
-        self.phones: list[Phone] = [
-            Phone(phone) for phone in (phones or [])
-        ]
-        self.birthday = (
-            Birthday(birthday) if birthday is not None else None
-        )
+        self.phones: list[Phone] = [Phone(phone) for phone in (phones or [])]
+        self.birthday = Birthday(birthday) if birthday is not None else None
         self.address: Address = Address(address)
-        self.email = (
-            Email(email) if email is not None else None
-        )
+        self.email = Email(email) if email is not None else None
 
     def add_birthday(self, birthday_str: str):
         """Add birthday to record, overwrite if already exists."""
@@ -142,7 +145,9 @@ class Record:
         """
         try:
             self.find_phone(phone)
-            warnings.warn(f"phone {phone} was already present for user {self.name}, skipping ...")
+            warnings.warn(
+                f"phone {phone} was already present for user {self.name}, skipping ..."
+            )
         except KeyError:
             self.phones.append(Phone(phone))
 
@@ -190,7 +195,7 @@ class Record:
 
         self.remove_phone(phone)
         self.add_phone(_phone)
-    
+
     def add_address(self, address_str: str):
         """Add address to record, overwrite if already exists."""
         self.address = Address(address_str)
@@ -212,8 +217,7 @@ class AddressBook(UserDict):
 
     def load_data_from_json(self, json_data):
         self.data = {
-            _record_data["name_"]: Record(**_record_data)
-            for _record_data in json_data
+            _record_data["name_"]: Record(**_record_data) for _record_data in json_data
         }
 
     def dump_data_to_json(self):
@@ -223,7 +227,7 @@ class AddressBook(UserDict):
                 "phones": [phone.value for phone in _record.phones],
                 "birthday": str(_record.birthday),
                 "address": str(_record.address),
-                "email": str(_record.email)
+                "email": str(_record.email),
             }
             for _record in self.data.values()
         ]
@@ -299,3 +303,101 @@ class AddressBookReader:
         with open(JSON_DB_PATH, "w") as json_out:
             print("Saving existing users data ...")
             json.dump(self.address_book.dump_data_to_json(), json_out)
+
+
+class ProjectRole(Field):
+    pass
+
+
+class ProjectTasks(Field):
+    pass
+
+
+class Hobby(Field):
+    pass
+
+
+class Note:
+    def __init__(
+        self,
+        name_: str,
+        project_role: str,
+        project_tasks: str,
+        hobbies: list[str] = None,
+    ):
+        self.name: Name = Name(name_)
+        self.project_role: ProjectRole = ProjectRole(project_role)
+        self.project_tasks: ProjectTasks = ProjectTasks(project_tasks)
+
+        self.hobbies: list[Hobby] = [Hobby(hobby) for hobby in (hobbies or [])]
+
+    def add_project_role(self, project_role: str):
+        """Add project role to note"""
+        self.project_role = ProjectRole(project_role)
+
+    def add_project_tasks(self, project_tasks: str):
+        """Add project tasks to note"""
+        self.project_tasks = ProjectTasks(project_tasks)
+
+    def add_hobby(self, hobby: str):
+        """Add hobby to note if not already present.
+
+        Args:
+            hobby: Hobby to add.
+        """
+        try:
+            self.find_hobby(hobby)
+            warnings.warn(
+                f"Hobby {hobby} was already added to note for {self.name}, skipping ..."
+            )
+        except KeyError:
+            self.hobbies.append(Hobby(hobby))
+
+    def find_hobby(self, hobby: str):
+        """Find hobby record by value.
+
+        Args:
+            hobby: Hobby to find.
+
+        Raises:
+            KeyError: if hobby does not exist.
+
+        Returns:
+            A Hobby object that is identical to the one being looked up.
+        """
+        for _hobby in self.hobbies:
+            if _hobby.value == hobby:
+                return _hobby
+        else:
+            raise KeyError(
+                f"Hobby {hobby} is not mentionned in the note for {self.name}"
+            )
+
+    def remove_hobby(self, hobby: str):
+        """Remove hobby from note.
+
+        Args:
+            hobby: Hobby to add.
+
+        Raises:
+            KeyError: if hobby does not exist.
+        """
+        _hobby = self.find_hobby(hobby)
+        self.hobbies.remove(_hobby)
+
+    def edit_hobby(self, hobby: str, new_hobby: str):
+        """Edit hobby.
+
+        Args:
+            hobby: Hobby value to edit.
+            new_hobby: Hobby value to change to.
+
+        Raises:
+            KeyError: if hobby does not exist.
+        """
+
+        self.remove_hobby(hobby)
+        self.add_hobby(new_hobby)
+
+    def __str__(self):
+        return f"Note for: {self.name.value} \n project role: {self.project_role}  \n project tasks: {self.project_tasks} \n hobbies: {'; '.join(h.value for h in self.hobbies)}"
