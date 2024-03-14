@@ -33,6 +33,7 @@ def input_error(error_msg_base):
                 return f"{error_msg_base}: {e}"
 
         return wrapper
+
     return decorator
 
 
@@ -54,8 +55,33 @@ class CliHelperBot:
             "birthdays": self.birthdays,
             "add-address": self.add_address,
             "add-email": self.add_email,
+            "help": self.help,
         }
         self._address_book = address_book
+
+    def help(self, *args: str) -> str:
+        """Outputs a help message for user."""
+        command_output = ""
+        if len(args) > 1:
+            command_output += (
+                "Warning: Command optionally expect one argument - command name. "
+                f"Received: {' '.join(args)}\n"
+            )
+
+        search_command = args[0] if args else None
+
+        if search_command:
+            if search_command in self.supported_commands:
+                command_output += f"Command '{search_command}' help: "
+                command_output += f"\n{self.supported_commands[search_command].__doc__.split('Raises:')[0].strip()}"
+            else:
+                command_output += f"Command '{search_command}' is not supported."
+        else:
+            command_output += "Supported commands: "
+            for command in sorted(self.supported_commands):
+                command_output += f"\n{command}"
+            command_output += "\n\nType 'help <command>' to get help for specific command."
+        return command_output
 
     def stop(self, message: str):
         """Stop the bot execution.
@@ -95,7 +121,7 @@ class CliHelperBot:
         """Add birthday date to already existing record.
 
         Args:
-            args: List with username and date to parse.
+            args: List with username and date to parse as YYYY.MM.DD.
 
         Returns:
             Command output
@@ -282,17 +308,17 @@ class CliHelperBot:
 
     @input_error(error_msg_base="Command 'birthdays' failed")
     def birthdays(self, *args: str) -> str:
-        """Prepares all contacts to be outputted into console that have BD in a following week.
+        """Prepares all contacts to be outputted into console that have BD in a following number of days.
 
         Args:
-            args: Command doesn't expect any args, list should be empty.
+            args: Number of days.
 
         Returns:
             Command output.
         """
         command_output = ""
         if len(args) != 1:
-            raise CommandOperationalError (
+            raise CommandOperationalError(
                 "Warning: Command expect one argument: number of days. "
                 f"Received: {' '.join(args)}\n"
             )
@@ -370,7 +396,7 @@ class CliHelperBot:
 
         record.add_address(address_str)
         return f"Contact {username} updated with address: {address_str}."
-    
+
     @input_error(error_msg_base="Command 'add-email' failed")
     def add_email(self, *args: str):
         """Add email to already existing record.
