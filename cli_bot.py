@@ -45,7 +45,7 @@ class CliHelperBot:
             "exit": self.stop,
             "hello": self.say_hello,
             "add": self.add_contact,
-            "change": self.change_contact,
+            "update-phone": self.change_contact,
             "phone": self.get_contact,
             "search": self.search_contact,
             "all": self.print_all_contacts,
@@ -54,6 +54,14 @@ class CliHelperBot:
             "birthdays": self.birthdays,
             "add-address": self.add_address,
             "add-email": self.add_email,
+            "delete-contact": self.delete_contact,
+            "delete-email": self.delete_email,
+            "delete-phone": self.delete_phone,
+            "delete-address": self.delete_address,
+            "delete-birthday": self.delete_birthday,
+            "update-email": self.update_email,
+            "update-address": self.update_address,
+            "update-birthday": self.update_birthday,
         }
         self._address_book = address_book
 
@@ -370,7 +378,7 @@ class CliHelperBot:
 
         record.add_address(address_str)
         return f"Contact {username} updated with address: {address_str}."
-    
+
     @input_error(error_msg_base="Command 'add-email' failed")
     def add_email(self, *args: str):
         """Add email to already existing record.
@@ -402,6 +410,204 @@ class CliHelperBot:
 
         record.add_email(email_str)
         return f"Contact {username} updated with email: {email_str}."
+
+    @input_error(error_msg_base="Command 'delete' failed")
+    def delete_contact(self, *args: str):
+        """Delete contact in Address Book.
+
+        Args:
+            args: username of user to remove.
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or user doesn't exist
+        """
+        username = args[0]
+        try:
+            self._address_book.delete(username)
+
+        except KeyError as e:
+            raise CommandOperationalError(
+                f"user with username {username} doesn't exist. "
+            ) from e
+        return f"Contact {username} removed from Address book."
+
+    def delete_phone(self, *args: str):
+        """Delete phone by username.
+
+        Args:
+            args: List of one argument - username
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or user doesn't exist
+        """
+        if len(args) != 2:
+            raise CommandOperationalError(
+                "command expects an input of one argument: username and phone. "
+                f"Received: {' '.join(args)}"
+            )
+        username, phone = args
+        try:
+            record = self._address_book.find(username)
+        except KeyError as e:
+            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+        record.remove_phone(phone)
+        return f"Phone of contact  {username} removed from Address book."
+
+    def delete_email(self, *args: str):
+        """Delete user email by username.
+
+        Args:
+            args: List of one argument - username
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or user doesn't exist
+        """
+        if len(args) != 1:
+            raise CommandOperationalError(
+                "command expects an input of one argument: username. "
+                f"Received: {' '.join(args)}"
+            )
+        username = args[0]
+        try:
+            record = self._address_book.find(username)
+        except KeyError as e:
+            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+        record.remove_email()
+        return f"Email of contact  {username} removed from Address book."
+
+    def delete_address(self, *args: str):
+        """Delete user address by username.
+
+        Args:
+            args: List of one argument - username
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or user doesn't exist
+        """
+        if len(args) != 1:
+            raise CommandOperationalError(
+                "command expects an input of one argument: username. "
+                f"Received: {' '.join(args)}"
+            )
+        username = args[0]
+        try:
+            record = self._address_book.find(username)
+        except KeyError as e:
+            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+        record.remove_address()
+        return f"Address of contact  {username} removed from Address book."
+
+    def delete_birthday(self, *args: str):
+        """Delete user birthday by username.
+
+        Args:
+            args: List of one argument - username
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or user doesn't exist
+        """
+        if len(args) != 1:
+            raise CommandOperationalError(
+                "command expects an input of one argument: username. "
+                f"Received: {' '.join(args)}"
+            )
+        username = args[0]
+        try:
+            record = self._address_book.find(username)
+        except KeyError as e:
+            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+        record.remove_birthday()
+        return f"Birthday of contact {username} removed from Address book."
+
+    def update_email(self, *args: str):
+        """Update user email by username.
+
+        Args:
+            args: List of one argument - username and email
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or user doesn't exist
+        """
+        if len(args) != 2:
+            raise CommandOperationalError(
+                "command expects an input of 2 arguments: username and email "
+                f"Received: {' '.join(args)}"
+            )
+        username, email = args
+        try:
+            record = self._address_book.find(username)
+        except KeyError as e:
+            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+        record.update_email(email)
+        return f"Email of contact  {username} updated."
+
+    def update_address(self, *args: str):
+        """Update user address by username.
+
+        Args:
+            args: List of one argument - username and address
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or user doesn't exist
+        """
+        if len(args) != 2:
+            raise CommandOperationalError(
+                "command expects an input of 2 arguments: username and address "
+                f"Received: {' '.join(args)}"
+            )
+        username, address = args
+        try:
+            record = self._address_book.find(username)
+        except KeyError as e:
+            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+        record.update_address(address)
+        return f"Address of contact  {username} updated."
+    
+    def update_birthday(self, *args: str):
+        """Update user birthday by username.
+
+        Args:
+            args: List of one argument - username and birthday
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or user doesn't exist
+        """
+        if len(args) != 2:
+            raise CommandOperationalError(
+                "command expects an input of 2 arguments: username and birthday "
+                f"Received: {' '.join(args)}"
+            )
+        username, birthday = args
+        try:
+            record = self._address_book.find(username)
+        except KeyError as e:
+            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+        record.update_birthday(birthday)
+        return f"Birthday of contact  {username} updated."
 
     def main(self) -> None:
         while True:
