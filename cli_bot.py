@@ -3,7 +3,13 @@ from __future__ import annotations
 from typing import Any
 from functools import wraps
 
-from datamodels import AddressBookReader, AddressBook, Record, NotesBook, Note
+from datamodels import (
+    AddressBook,
+    Record,
+    NotesBook,
+    Note,
+    BookReader,
+)
 
 
 class BaseCliHelperException(Exception):
@@ -424,6 +430,6 @@ class CliHelperBot:
 
 
 if __name__ == "__main__":
-    with AddressBookReader() as book:
-        cli_helper = CliHelperBot(book)
+    with BookReader() as book:
+        cli_helper = CliHelperBot(book.address_book, book.notes_book)
         cli_helper.main()
