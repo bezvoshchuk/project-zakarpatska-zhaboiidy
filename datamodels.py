@@ -482,7 +482,7 @@ class NotesBook(UserDict):
     #         return project_roles[0]
     #     return project_roles
 
-    def find_hobby(self, hobby_: str) -> List[Note]:
+    def find_hobby(self, hobby_: str) -> None:
         """Find a notes in the notes book by hobby.
 
         Args:
@@ -492,14 +492,18 @@ class NotesBook(UserDict):
             KeyError: if note doesn't exist.
         """
         hobby_notes = []
-        for note in self.data:
-            if note.find_hobby(hobby_) == hobby_:
-                hobby_notes.append(note)
+        for name_, note in self.data.items():
+            print(name_, "name_")
+            for hobby in note.hobbies:
+                if hobby.value == hobby_:
+                    print(self.data[name_])
+                    res_obj = self.data[name_]
+                    hobby_notes.append(res_obj)
 
         if len(hobby_notes) == 0:
             raise KeyError(f"Notes with {hobby_} were not found.")
 
-        return hobby_notes
+        # return hobby_notes
 
     def delete(self, name_: str) -> None:
         """Delete a note in the notes book by name.
