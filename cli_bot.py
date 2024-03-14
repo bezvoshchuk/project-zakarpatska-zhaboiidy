@@ -61,6 +61,8 @@ class CliHelperBot:
             "add-address": self.add_address,
             "add-email": self.add_email,
             "add-note": self.add_note,
+            "find-note": self.find_note,
+            "find-hobby": self.find_hobby,
         }
         self._address_book = address_book
         self._notes_book = notes_book
@@ -402,6 +404,44 @@ class CliHelperBot:
             )
 
         return f"Created note {name} {project_role}."
+
+    @input_error(error_msg_base="Command 'find-note' failed")
+    def find_note(self, *args: str) -> Note:
+        """Find note by name.
+
+        Args:
+            args: Note name to find.
+
+        Returns:
+            Note.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or no note found
+        """
+
+        [name] = args
+        note = self._notes_book.find(name_=name)
+
+        return note
+
+    @input_error(error_msg_base="Command 'find-project-role' failed")
+    def find_hobby(self, *args: str) -> Note:
+        """Find notes by project role.
+
+        Args:
+            args: Project role to find.
+
+        Returns:
+            Notes.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or no note found
+        """
+
+        [hobby] = args
+        result = self._notes_book.find_hobby(hobby_=hobby)
+
+        return result
 
     def main(self) -> None:
         while True:
