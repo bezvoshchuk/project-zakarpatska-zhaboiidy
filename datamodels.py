@@ -96,8 +96,7 @@ class Address(Field):
 
 class Email(Field):
     def __init__(self, email: str):
-        validated_email = self.validate_email(email)
-        super().__init__(value=validated_email)
+        super().__init__(value=email)
 
     @staticmethod
     def validate_email(email: str):
@@ -218,7 +217,8 @@ class Record:
 
     def add_email(self, email_str: str):
         """Add email to record, overwrite if already exists."""
-        self.email = Email(email_str)
+        _email = Email.validate_email(email_str)
+        self.email = Email(_email)
 
     def __str__(self):
         return (
