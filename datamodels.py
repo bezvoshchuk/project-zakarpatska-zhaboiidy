@@ -8,13 +8,10 @@ import json
 import warnings
 import re
 
-
-from utils import get_birthdays_per_week
-
+from utils import get_birthdays_per_days
 
 DATE_FORMAT = "%Y.%m.%d"
 JSON_DB_PATH = "./users.json"
-
 
 argument_parser = argparse.ArgumentParser(
     description=(
@@ -89,7 +86,7 @@ class Phone(Field):
             raise ValueError(f"Phone should have 10 digits, entered: {phone}") from e
 
         return phone
-    
+
 
 class Address(Field):
     def __init__(self, address: str):
@@ -117,7 +114,8 @@ class Email(Field):
 
 
 class Record:
-    def __init__(self, name_: str, phones: list[str] = None, birthday: date = None, address: date = None, email: date = None):
+    def __init__(self, name_: str, phones: list[str] = None, birthday: date = None, address: date = None,
+                 email: date = None):
         self.name: Name = Name(name_)
         self.phones: list[Phone] = [
             Phone(phone) for phone in (phones or [])
@@ -190,7 +188,7 @@ class Record:
 
         self.remove_phone(phone)
         self.add_phone(_phone)
-    
+
     def add_address(self, address_str: str):
         """Add address to record, overwrite if already exists."""
         self.address = Address(address_str)
@@ -238,9 +236,9 @@ class AddressBook(UserDict):
             self.data[record_.name.value] = record_
             return record_
 
-    def get_birthdays_per_week(self) -> dict[str, list[Record]]:
+    def get_birthdays_per_days(self, days) -> dict[str, list[Record]]:
         """Returns a list of records for users that have BD in a following week."""
-        return get_birthdays_per_week(list(self.data.values()))
+        return get_birthdays_per_days(list(self.data.values()), days)
 
     def find(self, name_: str) -> Record:
         """Find a record in address book by username.

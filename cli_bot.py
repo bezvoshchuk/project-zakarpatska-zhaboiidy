@@ -247,6 +247,7 @@ class CliHelperBot:
 
         return f"Record found: \n{record}"
 
+    @input_error(error_msg_base="Command 'birthdays' failed")
     def birthdays(self, *args: str) -> str:
         """Prepares all contacts to be outputted into console that have BD in a following week.
 
@@ -257,20 +258,21 @@ class CliHelperBot:
             Command output.
         """
         command_output = ""
-        if args:
-            command_output += (
-                "Warning: Command doesn't expect any arguments. "
+        if len(args) != 1:
+            raise CommandOperationalError (
+                "Warning: Command expect one argument: number of days. "
                 f"Received: {' '.join(args)}\n"
             )
+        days = int(args[0])
 
-        results = self._address_book.get_birthdays_per_week().items()
+        results = self._address_book.get_birthdays_per_days(days).items()
         if not results:
             return "No contacts found"
 
         command_output += "Contacts per day: "
-        for week_day, records in self._address_book.get_birthdays_per_week().items():
-            records_str = '\n'.join(str(r) for r in records)
-            command_output += f"\nHave BD on {week_day}:\n {records_str}"
+        for date, records in results:
+            records_str = '| ' + '\n | '.join(str(r) for r in records)
+            command_output += f"\nHave BD on {date}:\n {records_str}"
 
         return command_output
 
