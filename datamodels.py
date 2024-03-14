@@ -570,7 +570,7 @@ class NotesBook(UserDict):
         """Print all existing notes from file"""
 
         self.data = {
-            _note_data["name_"]: Record(**_note_data) for _note_data in json_data
+            _note_data["name_"]: Note(**_note_data) for _note_data in json_data
         }
 
     def dump_data_to_json(self):
@@ -610,22 +610,29 @@ class NotesBook(UserDict):
 
         return self.data[name_]
 
-    def find_project_role(self, project_role_: str) -> Note:
-        """Find a note in the notes book by project role.
+    # def find_project_role(self, project_role_: str) -> List[Note] | Note:
+    #     """Find a note/s in the notes book by project role.
 
-        Args:
-            project_role_: Project role of to find.
+    #     Args:
+    #         project_role_: Project role of to find.
 
-        Raises:
-            KeyError: if note doesn't exist.
-        """
-        project_role_note = filter(
-            lambda note: note["project_role"] == project_role_, self.data
-        )
-        if project_role_note not in self.data:
-            raise KeyError(f"Note for {project_role_} was not found.")
+    #     Raises:
+    #         KeyError: if note doesn't exist.
+    #     """
+    #     project_roles = []
+    #     print(self.data, "self.data")
+    #     for note in self.data:
+    #         # print(note[project_role_], "note.value")
+    #         print(project_role_ in note, "project_role_ in note ")
+    #         if project_role_ in note:
+    #             project_roles.append(note)
 
-        return project_role_note
+    #     if len(project_roles) == 0:
+    #         raise KeyError(f"Note for {project_role_} was not found.")
+
+    #     if len(project_roles) == 1:
+    #         return project_roles[0]
+    #     return project_roles
 
     def find_hobby(self, hobby_: str) -> List[Note]:
         """Find a notes in the notes book by hobby.
@@ -638,7 +645,7 @@ class NotesBook(UserDict):
         """
         hobby_notes = []
         for note in self.data:
-            if hobby_ in note["hobbies"]:
+            if note.find_hobby(hobby_) == hobby_:
                 hobby_notes.append(note)
 
         if len(hobby_notes) == 0:
