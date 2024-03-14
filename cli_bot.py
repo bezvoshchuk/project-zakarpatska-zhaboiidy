@@ -71,16 +71,18 @@ class CliHelperBot:
         search_command = args[0] if args else None
 
         if search_command:
-            if search_command in self.supported_commands:
-                command_output += f"Command '{search_command}' help: "
-                command_output += f"\n{self.supported_commands[search_command].__doc__.split('Raises:')[0].strip()}"
-            else:
-                command_output += f"Command '{search_command}' is not supported."
-        else:
-            command_output += "Supported commands: "
-            for command in sorted(self.supported_commands):
-                command_output += f"\n{command}"
-            command_output += "\n\nType 'help <command>' to get help for specific command."
+            if search_command not in self.supported_commands:
+                return "Command not supported. Type 'help' to get list of supported commands."
+
+            command_output += f"Command '{search_command}' help: "
+            command_output += f"\n{self.supported_commands[search_command].__doc__.split('Raises:')[0].strip()}"
+            return command_output
+
+        command_output += "Supported commands: "
+        for command in sorted(self.supported_commands):
+            command_output += f"\n{command}"
+        command_output += "\n\nType 'help <command>' to get help for specific command."
+
         return command_output
 
     def stop(self, message: str):
@@ -322,7 +324,12 @@ class CliHelperBot:
                 "Warning: Command expect one argument: number of days. "
                 f"Received: {' '.join(args)}\n"
             )
-        days = int(args[0])
+
+        try:
+            days = int(args[0])
+        except ValueError:
+            raise CommandOperationalError(
+                "Command expects a valid integer - number of days, please recheck your input.")
 
         results = self._address_book.get_birthdays_per_days(days).items()
         if not results:
