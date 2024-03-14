@@ -1,9 +1,1 @@
-[
-  {
-    "name_": "vika",
-    "phones": ["0931111111"],
-    "birthday": "2024.03.20",
-    "address": "Kyiv,Ukraine",
-    "email": "nazaruk.v92@gmail.com"
-  }
-]
+[{"name_": "vika", "phones": ["0931111111"], "birthday": "2024.03.20", "address": "Kyiv,Ukraine", "email": "nazaruk.v92@gmail.com"}, {"name_": "Dima", "phones": ["0932222222"], "birthday": "None", "address": "None", "email": "bezvoshchuk@gmail.com"}]
