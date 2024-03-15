@@ -10,5 +10,11 @@
     "project_role": "Team Lead",
     "project_tasks": "Team managament, planning, pull requests review",
     "hobbies": ["Music", "Running"]
+  },
+  {
+    "name_": "Vlad",
+    "project_role": "Developer",
+    "project_tasks": "CLI Autocomplete, Birthdays for the last n days, bugfixing",
+    "hobbies": ["Walking", "Reading"]
   }
 ]
