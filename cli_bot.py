@@ -13,8 +13,8 @@ from datamodels import (
     Record,
     NotesBook,
     Note,
-    BookReader,
 )
+from reader import BookReader
 
 
 class BaseCliHelperException(Exception):
@@ -39,7 +39,7 @@ def input_error(error_msg_base):
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except (CommandOperationalError, CommandNotSupported, ValueError) as e:
+            except (CommandOperationalError, CommandNotSupported, ValueError, KeyError) as e:
                 return f"{error_msg_base}: {e}"
 
         return wrapper
@@ -168,6 +168,7 @@ class CliHelperBot:
                 "command expects an input of two arguments: username and date, separated by a space. "
                 f"Received: {' '.join(args)}"
             )
+
         username, date_str = args
         try:
             record = self._address_book.find(username)
@@ -400,7 +401,7 @@ class CliHelperBot:
         return command_handler(*args)
 
     @input_error(error_msg_base="Command 'add-address' failed")
-    def add_address(self, *args: str):
+    def add_address(self, *args: str) -> str:
         """Add address to already existing record.
 
         Args:
@@ -418,6 +419,7 @@ class CliHelperBot:
                 "command expects an input of two arguments: username and address, separated by a space. "
                 f"Received: {' '.join(args)}"
             )
+
         username, address_str = args
         try:
             record = self._address_book.find(username)
@@ -432,7 +434,7 @@ class CliHelperBot:
         return f"Contact {username} updated with address: {address_str}."
 
     @input_error(error_msg_base="Command 'add-email' failed")
-    def add_email(self, *args: str):
+    def add_email(self, *args: str) -> str:
         """Add email to already existing record.
 
         Args:
@@ -450,6 +452,7 @@ class CliHelperBot:
                 "command expects an input of two arguments: username and email, separated by a space. "
                 f"Received: {' '.join(args)}"
             )
+
         username, email_str = args
         try:
             record = self._address_book.find(username)
@@ -494,7 +497,7 @@ class CliHelperBot:
         return f"Created note {name} {project_role}."
 
     @input_error(error_msg_base="Command 'delete-note' failed")
-    def delete_note(self, *args: str):
+    def delete_note(self, *args: str) -> str:
         """Delete note by name.
 
         Args:
@@ -511,6 +514,7 @@ class CliHelperBot:
                 "command expects an input of one argument: note name. "
                 f"Received: {' '.join(args)}"
             )
+
         name = args[0]
         try:
             self._notes_book.delete(name)
@@ -519,6 +523,7 @@ class CliHelperBot:
             raise CommandOperationalError(
                 f"Note with name {name} doesn't exist. "
             ) from e
+
         return f"Note {name} removed from Notes book."
 
     @input_error(error_msg_base="Command 'add-project-tasks' failed")
@@ -540,9 +545,10 @@ class CliHelperBot:
                 "command expects an input of two arguments: name and project tasks string, separated by a space. "
                 f"Received: {' '.join(args)}"
             )
+
         name, *project_tasks = args
         tasks_str = " ".join(t for t in project_tasks)
-        print("project_tasks  tasks_str >>>>", tasks_str)
+
         try:
             note = self._notes_book.find(name)
 
@@ -556,14 +562,14 @@ class CliHelperBot:
         return f"Note {name} updated"
 
     @input_error(error_msg_base="Command 'find-note' failed")
-    def find_note(self, *args: str) -> Note:
+    def find_note(self, *args: str) -> str:
         """Find note by name.
 
         Args:
             args: Note name to find.
 
         Returns:
-            Note.
+            Command output.
 
         Raises:
             CommandOperationalError: if wrong arguments or no note found
@@ -575,20 +581,20 @@ class CliHelperBot:
                 f"Received: {len(args)}"
             )
 
-        [name] = args
+        name = args[0]
         note = self._notes_book.find(name_=name)
 
-        return note
+        return f"Found note: {note}"
 
     @input_error(error_msg_base="Command 'find-project-role' failed")
-    def find_project_role(self, *args: str) -> Note:
+    def find_project_role(self, *args: str) -> str:
         """Find notes by project role.
 
         Args:
             args: Project role to find.
 
         Returns:
-            Notes.
+            Command output.
 
         Raises:
             CommandOperationalError: if wrong arguments or no note found
@@ -600,20 +606,24 @@ class CliHelperBot:
                 f"Received: {len(args)}"
             )
 
-        [project_role] = args
+        project_role = args[0]
         result = self._notes_book.find_project_role(project_role_=project_role)
 
-        return result
+        command_output = "Found Notes: "
+        for record in result:
+            command_output += f"\n{record}"
+
+        return command_output
 
     @input_error(error_msg_base="Command 'find-hobby' failed")
-    def find_hobby(self, *args: str) -> Note:
+    def find_hobby(self, *args: str) -> str:
         """Find notes by hobby.
 
         Args:
             args: Hobby to find.
 
         Returns:
-            Notes.
+            Command output.
 
         Raises:
             CommandOperationalError: if wrong arguments or no note found
@@ -623,10 +633,15 @@ class CliHelperBot:
                 "command expects an input of one argument: hobby string."
                 f"Received: {len(args)}"
             )
-        [hobby] = args
+
+        hobby = args[0]
         result = self._notes_book.find_hobby(hobby_=hobby)
 
-        return result
+        command_output = "Found Notes: "
+        for record in result:
+            command_output += f"\n{record}"
+
+        return command_output
 
     @input_error(error_msg_base="Command 'update' failed")
     def update_hobby(self, *args: str) -> str:
@@ -649,8 +664,7 @@ class CliHelperBot:
 
         name, old_hobby, new_hobby = args
         try:
-            note = self.find_note(name)
-            print(note)
+            note = self._notes_book.find(name)
 
         except KeyError as e:
             raise CommandOperationalError(
@@ -683,7 +697,7 @@ class CliHelperBot:
         return command_output
 
     @input_error(error_msg_base="Command 'delete-contact' failed")
-    def delete_contact(self, *args: str):
+    def delete_contact(self, *args: str) -> str:
         """Delete contact in Address Book.
 
         Args:
@@ -700,6 +714,7 @@ class CliHelperBot:
                 "command expects an input of one argument: username. "
                 f"Received: {' '.join(args)}"
             )
+
         username = args[0]
         try:
             self._address_book.delete(username)
@@ -708,10 +723,11 @@ class CliHelperBot:
             raise CommandOperationalError(
                 f"user with username {username} doesn't exist. "
             ) from e
+
         return f"Contact {username} removed from Address book."
 
     @input_error(error_msg_base="Command 'delete-phone' failed")
-    def delete_phone(self, *args: str):
+    def delete_phone(self, *args: str) -> str:
         """Delete phone by username.
 
         Args:
@@ -728,6 +744,7 @@ class CliHelperBot:
                 "command expects an input of one argument: username and phone. "
                 f"Received: {' '.join(args)}"
             )
+
         username, phone = args
         try:
             record = self._address_book.find(username)
@@ -735,11 +752,12 @@ class CliHelperBot:
             raise CommandOperationalError(
                 f"user with username {username} doesn`t exist. Try another username"
             ) from e
+
         record.remove_phone(phone)
         return f"Phone of contact  {username} removed from Address book."
 
     @input_error(error_msg_base="Command 'delete-email' failed")
-    def delete_email(self, *args: str):
+    def delete_email(self, *args: str) -> str:
         """Delete user email by username.
 
         Args:
@@ -756,6 +774,7 @@ class CliHelperBot:
                 "command expects an input of one argument: username. "
                 f"Received: {' '.join(args)}"
             )
+
         username = args[0]
         try:
             record = self._address_book.find(username)
@@ -763,11 +782,12 @@ class CliHelperBot:
             raise CommandOperationalError(
                 f"user with username {username} doesn`t exist. Try another username"
             ) from e
+
         record.remove_email()
         return f"Email of contact  {username} removed from Address book."
 
     @input_error(error_msg_base="Command 'delete-address' failed")
-    def delete_address(self, *args: str):
+    def delete_address(self, *args: str) -> str:
         """Delete user address by username.
 
         Args:
@@ -784,6 +804,7 @@ class CliHelperBot:
                 "command expects an input of one argument: username. "
                 f"Received: {' '.join(args)}"
             )
+
         username = args[0]
         try:
             record = self._address_book.find(username)
@@ -791,11 +812,12 @@ class CliHelperBot:
             raise CommandOperationalError(
                 f"user with username {username} doesn`t exist. Try another username"
             ) from e
+
         record.remove_address()
         return f"Address of contact  {username} removed from Address book."
 
     @input_error(error_msg_base="Command 'delete-birthday' failed")
-    def delete_birthday(self, *args: str):
+    def delete_birthday(self, *args: str) -> str:
         """Delete user birthday by username.
 
         Args:
@@ -812,6 +834,7 @@ class CliHelperBot:
                 "command expects an input of one argument: username. "
                 f"Received: {' '.join(args)}"
             )
+
         username = args[0]
         try:
             record = self._address_book.find(username)
@@ -819,11 +842,12 @@ class CliHelperBot:
             raise CommandOperationalError(
                 f"user with username {username} doesn`t exist. Try another username"
             ) from e
+
         record.remove_birthday()
         return f"Birthday of contact {username} removed from Address book."
 
     @input_error(error_msg_base="Command 'update-email' failed")
-    def update_email(self, *args: str):
+    def update_email(self, *args: str) -> str:
         """Update user email by username.
 
         Args:
@@ -840,6 +864,7 @@ class CliHelperBot:
                 "command expects an input of 2 arguments: username and email "
                 f"Received: {' '.join(args)}"
             )
+
         username, email = args
         try:
             record = self._address_book.find(username)
@@ -847,11 +872,12 @@ class CliHelperBot:
             raise CommandOperationalError(
                 f"user with username {username} doesn`t exist. Try another username"
             ) from e
+
         record.update_email(email)
         return f"Email of contact  {username} updated."
 
     @input_error(error_msg_base="Command 'update-address' failed")
-    def update_address(self, *args: str):
+    def update_address(self, *args: str) -> str:
         """Update user address by username.
 
         Args:
@@ -868,6 +894,7 @@ class CliHelperBot:
                 "command expects an input of 2 arguments: username and address "
                 f"Received: {' '.join(args)}"
             )
+
         username, address = args
         try:
             record = self._address_book.find(username)
@@ -875,11 +902,12 @@ class CliHelperBot:
             raise CommandOperationalError(
                 f"user with username {username} doesn`t exist. Try another username"
             ) from e
+
         record.update_address(address)
         return f"Address of contact  {username} updated."
 
     @input_error(error_msg_base="Command 'update-birthday' failed")
-    def update_birthday(self, *args: str):
+    def update_birthday(self, *args: str) -> str:
         """Update user birthday by username.
 
         Args:
@@ -896,6 +924,7 @@ class CliHelperBot:
                 "command expects an input of 2 arguments: username and birthday "
                 f"Received: {' '.join(args)}"
             )
+
         username, birthday = args
         try:
             record = self._address_book.find(username)
@@ -903,6 +932,7 @@ class CliHelperBot:
             raise CommandOperationalError(
                 f"user with username {username} doesn`t exist. Try another username"
             ) from e
+
         record.update_birthday(birthday)
         return f"Birthday of contact  {username} updated."
 
@@ -919,7 +949,7 @@ class CliHelperBot:
                 command, args = self.parse_input(user_input)
                 command_output = self.execute_command(command, args)
                 print(
-                    f"Command '{command}' executed successfully. Result is:"
+                    f"Command was'{command}' executed, might have been successfully. Result is:"
                     f"\n{command_output}"
                 )
 
