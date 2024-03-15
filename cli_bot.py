@@ -91,6 +91,9 @@ class CliHelperBot:
         Args:
             message: Explanation why bot needs to stop
 
+        Returns:
+            None
+
         Raises:
             CliHelperSigStop: with explanation message
         """
