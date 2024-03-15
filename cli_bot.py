@@ -75,7 +75,7 @@ class CliHelperBot:
                 return "Command not supported. Type 'help' to get list of supported commands."
 
             command_output += f"Command '{search_command}' help: "
-            command_output += f"\n{self.supported_commands[search_command].__doc__.split('Raises:')[0].strip()}"
+            command_output += f"\n{self.supported_commands[search_command].__doc__.split('Returns:')[0].strip()}"
             return command_output
 
         command_output += "Supported commands: "
