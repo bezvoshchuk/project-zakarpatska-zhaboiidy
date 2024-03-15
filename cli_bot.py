@@ -67,6 +67,7 @@ class CliHelperBot:
             "add-address": self.add_address,
             "add-email": self.add_email,
             "add-note": self.add_note,
+            "delete-note": self.delete_note,
             "add-project-tasks": self.add_project_tasks,
             "find-note": self.find_note,
             "find-project-role": self.find_project_role,
@@ -198,12 +199,7 @@ class CliHelperBot:
             )
 
         username, phone = args
-        record = self._address_book.add_record(
-            Record(
-                name_=username,
-                phones=[phone]
-            )
-        )
+        record = self._address_book.add_record(Record(name_=username, phones=[phone]))
 
         if record is None:
             raise CommandOperationalError(
@@ -357,7 +353,8 @@ class CliHelperBot:
             days = int(args[0])
         except ValueError:
             raise CommandOperationalError(
-                "Command expects a valid integer - number of days, please recheck your input.")
+                "Command expects a valid integer - number of days, please recheck your input."
+            )
 
         results = self._address_book.get_birthdays_per_days(days).items()
         if not results:
@@ -365,7 +362,7 @@ class CliHelperBot:
 
         command_output += "Contacts per day: "
         for date, records in results:
-            records_str = '| ' + '\n | '.join(str(r) for r in records)
+            records_str = "| " + "\n | ".join(str(r) for r in records)
             command_output += f"\nHave BD on {date}:\n {records_str}"
 
         return command_output
@@ -494,6 +491,34 @@ class CliHelperBot:
 
         return f"Created note {name} {project_role}."
 
+    @input_error(error_msg_base="Command 'delete-note' failed")
+    def delete_note(self, *args: str):
+        """Delete note by name.
+
+        Args:
+            args: Name of note to remove.
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or note doesn't exist
+        """
+        if len(args) != 1:
+            raise CommandOperationalError(
+                "command expects an input of one argument: note name. "
+                f"Received: {' '.join(args)}"
+            )
+        name = args[0]
+        try:
+            self._notes_book.delete(name)
+
+        except KeyError as e:
+            raise CommandOperationalError(
+                f"Note with name {name} doesn't exist. "
+            ) from e
+        return f"Note {name} removed from Notes book."
+
     @input_error(error_msg_base="Command 'add-project-tasks' failed")
     def add_project_tasks(self, *args: str) -> str:
         """Add project tasks to existing note.
@@ -508,11 +533,11 @@ class CliHelperBot:
             CommandOperationalError if user does not exist.
             ValueError if date is invalid.
         """
-        # if len(args) <= 2:
-        #     raise CommandOperationalError(
-        #         "command expects an input of two arguments: name and project tasks string, separated by a space. "
-        #         f"Received: {' '.join(args)}"
-        #     )
+        if len(args) <= 2:
+            raise CommandOperationalError(
+                "command expects an input of two arguments: name and project tasks string, separated by a space. "
+                f"Received: {' '.join(args)}"
+            )
         name, *project_tasks = args
         tasks_str = " ".join(t for t in project_tasks)
         print("project_tasks  tasks_str >>>>", tasks_str)
@@ -635,7 +660,9 @@ class CliHelperBot:
         try:
             record = self._address_book.find(username)
         except KeyError as e:
-            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+            raise CommandOperationalError(
+                f"user with username {username} doesn`t exist. Try another username"
+            ) from e
         record.remove_phone(phone)
         return f"Phone of contact  {username} removed from Address book."
 
@@ -661,7 +688,9 @@ class CliHelperBot:
         try:
             record = self._address_book.find(username)
         except KeyError as e:
-            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+            raise CommandOperationalError(
+                f"user with username {username} doesn`t exist. Try another username"
+            ) from e
         record.remove_email()
         return f"Email of contact  {username} removed from Address book."
 
@@ -687,7 +716,9 @@ class CliHelperBot:
         try:
             record = self._address_book.find(username)
         except KeyError as e:
-            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+            raise CommandOperationalError(
+                f"user with username {username} doesn`t exist. Try another username"
+            ) from e
         record.remove_address()
         return f"Address of contact  {username} removed from Address book."
 
@@ -713,7 +744,9 @@ class CliHelperBot:
         try:
             record = self._address_book.find(username)
         except KeyError as e:
-            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+            raise CommandOperationalError(
+                f"user with username {username} doesn`t exist. Try another username"
+            ) from e
         record.remove_birthday()
         return f"Birthday of contact {username} removed from Address book."
 
@@ -739,7 +772,9 @@ class CliHelperBot:
         try:
             record = self._address_book.find(username)
         except KeyError as e:
-            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+            raise CommandOperationalError(
+                f"user with username {username} doesn`t exist. Try another username"
+            ) from e
         record.update_email(email)
         return f"Email of contact  {username} updated."
 
@@ -765,7 +800,9 @@ class CliHelperBot:
         try:
             record = self._address_book.find(username)
         except KeyError as e:
-            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+            raise CommandOperationalError(
+                f"user with username {username} doesn`t exist. Try another username"
+            ) from e
         record.update_address(address)
         return f"Address of contact  {username} updated."
 
@@ -791,7 +828,9 @@ class CliHelperBot:
         try:
             record = self._address_book.find(username)
         except KeyError as e:
-            raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
+            raise CommandOperationalError(
+                f"user with username {username} doesn`t exist. Try another username"
+            ) from e
         record.update_birthday(birthday)
         return f"Birthday of contact  {username} updated."
 
