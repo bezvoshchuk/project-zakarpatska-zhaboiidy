@@ -4,5 +4,11 @@
     "project_role": "Developer",
     "project_tasks": "Implemented notes feature",
     "hobbies": ["Figure Skating", "Reading"]
+  },
+  {
+    "name_": "Dmytro",
+    "project_role": "Team Lead",
+    "project_tasks": "Team managament, planning, pull requests review",
+    "hobbies": ["Music", "Running"]
   }
 ]
