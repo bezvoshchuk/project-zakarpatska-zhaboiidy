@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from prompt_toolkit import PromptSession
+from prompt_toolkit.completion import NestedCompleter
+
 import re
 from typing import Any
 from functools import wraps
 
+from autocomplete import get_autocomplete, style
 from datamodels import AddressBookReader, AddressBook, Record
 
 
@@ -579,7 +583,6 @@ class CliHelperBot:
         record.remove_birthday()
         return f"Birthday of contact {username} removed from Address book."
 
-
     @input_error(error_msg_base="Command 'update-email' failed")
     def update_email(self, *args: str):
         """Update user email by username.
@@ -631,7 +634,7 @@ class CliHelperBot:
             raise CommandOperationalError(f"user with username {username} doesn`t exist. Try another username") from e
         record.update_address(address)
         return f"Address of contact  {username} updated."
-    
+
     @input_error(error_msg_base="Command 'update-birthday' failed")
     def update_birthday(self, *args: str):
         """Update user birthday by username.
@@ -659,9 +662,14 @@ class CliHelperBot:
         return f"Birthday of contact  {username} updated."
 
     def main(self) -> None:
+
+        autocomplete_list = get_autocomplete(self._address_book.get_all_names(), list(self.supported_commands.keys()))
+        text = NestedCompleter.from_nested_dict(autocomplete_list)
+        session = PromptSession(completer=text, style=style)
+
         while True:
             try:
-                user_input = input("Enter a command with arguments separated with a ' ' character: ")
+                user_input = session.prompt("Enter a command with arguments separated with a ' ' character: ")
 
                 command, args = self.parse_input(user_input)
                 command_output = self.execute_command(command, args)

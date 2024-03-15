@@ -58,12 +58,18 @@ class Birthday(Field):
     @staticmethod
     def validate_date(date_str: str) -> date:
         """Validate date string, raises ValueError if date cannot be parsed"""
+
+        if date_str == 'None':
+            return None
+
         try:
             return datetime.datetime.strptime(date_str, DATE_FORMAT).date()
         except Exception:
             raise ValueError(f"Provided date {date_str} should follow format {DATE_FORMAT}, aborting ...")
 
     def __str__(self):
+        if self.value is None:
+            return "Not set"
         return self.value.strftime(DATE_FORMAT)
 
 
@@ -113,8 +119,8 @@ class Email(Field):
 
 
 class Record:
-    def __init__(self, name_: str, phones: list[str] = None, birthday: date = None, address: date = None,
-                 email: date = None):
+    def __init__(self, name_: str, phones: list[str] = None, birthday: date = None, address: str = None,
+                 email: str = None):
         self.name: Name = Name(name_)
         self.phones: list[Phone] = [
             Phone(phone) for phone in (phones or [])
@@ -408,6 +414,10 @@ class AddressBook(UserDict):
         _record = self.find(name_)
         del self.data[name_]
 
+    def get_all_names(self) -> list[str]:
+        """Get all names from address book."""
+        return list(self.data.keys())
+
 
 class AddressBookReader:
     address_book: None | AddressBook = None
@@ -431,6 +441,8 @@ class AddressBookReader:
             json_in.close()
         except FileNotFoundError:
             print("Users data file don't exist, returning empty list ...")
+        except json.JSONDecodeError:
+            print("Users data file is not a valid JSON, returning empty list ...")
 
         self.address_book.load_data_from_json(users_data)
 
