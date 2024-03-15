@@ -671,6 +671,8 @@ class BookReader:
                 json.load(json_in)
         except FileNotFoundError:
             print("Notes data file don't exist, returning empty list ...")
+        except json.JSONDecodeError:
+            print("Users data file is not a valid JSON, returning empty list ...")
 
         self.notes_book.load_data_from_json(notes_data)
 
@@ -690,6 +692,8 @@ class BookReader:
                 json.load(json_in)
         except FileNotFoundError:
             print("Users data file don't exist, returning empty list ...")
+        except json.JSONDecodeError:
+            print("Users data file is not a valid JSON, returning empty list ...")
 
         self.address_book.load_data_from_json(users_data)
 
