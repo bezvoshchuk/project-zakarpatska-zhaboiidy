@@ -61,7 +61,9 @@ class CliHelperBot:
             "add-address": self.add_address,
             "add-email": self.add_email,
             "add-note": self.add_note,
+            "add-project-tasks": self.add_project_tasks,
             "find-note": self.find_note,
+            "find-project-role": self.find_project_role,
             "find-hobby": self.find_hobby,
         }
         self._address_book = address_book
@@ -405,6 +407,39 @@ class CliHelperBot:
 
         return f"Created note {name} {project_role}."
 
+    @input_error(error_msg_base="Command 'add-project-tasks' failed")
+    def add_project_tasks(self, *args: str) -> str:
+        """Add project tasks to existing note.
+
+        Args:
+            args: List with note name and project string.
+
+        Returns:
+            Command output
+
+        Raises:
+            CommandOperationalError if user does not exist.
+            ValueError if date is invalid.
+        """
+        if len(args) <= 2:
+            raise CommandOperationalError(
+                "command expects an input of two arguments: name and project tasks string, separated by a space. "
+                f"Received: {' '.join(args)}"
+            )
+        name, project_tasks = args
+        print(project_tasks, "project_tasks")
+        try:
+            note = self._notes_book.find(name)
+
+        except KeyError as e:
+            raise CommandOperationalError(
+                f"user with name {name} doesn't exist. "
+                f"If you want to add number, please use 'add' command."
+            ) from e
+
+        note.add_project_tasks(project_tasks)
+        return f"Note {name} updated"
+
     @input_error(error_msg_base="Command 'find-note' failed")
     def find_note(self, *args: str) -> Note:
         """Find note by name.
@@ -425,11 +460,30 @@ class CliHelperBot:
         return note
 
     # @input_error(error_msg_base="Command 'find-project-role' failed")
-    def find_hobby(self, *args: str) -> Note:
+    def find_project_role(self, *args: str) -> Note:
         """Find notes by project role.
 
         Args:
             args: Project role to find.
+
+        Returns:
+            Notes.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or no note found
+        """
+
+        [project_role] = args
+        result = self._notes_book.find_project_role(project_role_=project_role)
+
+        return result
+
+    # @input_error(error_msg_base="Command 'find-hobby' failed")
+    def find_hobby(self, *args: str) -> Note:
+        """Find notes by hobby.
+
+        Args:
+            args: Hobby to find.
 
         Returns:
             Notes.

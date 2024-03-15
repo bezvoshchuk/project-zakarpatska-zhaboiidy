@@ -458,29 +458,27 @@ class NotesBook(UserDict):
 
         return self.data[name_]
 
-    # def find_project_role(self, project_role_: str) -> List[Note] | Note:
-    #     """Find a note/s in the notes book by project role.
+    def find_project_role(self, project_role_: str) -> None:
+        """Find a note/s in the notes book by project role.
 
-    #     Args:
-    #         project_role_: Project role of to find.
+        Args:
+            project_role_: Project role of to find.
 
-    #     Raises:
-    #         KeyError: if note doesn't exist.
-    #     """
-    #     project_roles = []
-    #     print(self.data, "self.data")
-    #     for note in self.data:
-    #         # print(note[project_role_], "note.value")
-    #         print(project_role_ in note, "project_role_ in note ")
-    #         if project_role_ in note:
-    #             project_roles.append(note)
+        Raises:
+            KeyError: if note doesn't exist.
+        """
+        project_roles = []
+        for name_, note in self.data.items():
 
-    #     if len(project_roles) == 0:
-    #         raise KeyError(f"Note for {project_role_} was not found.")
+            if note.project_role.value == project_role_:
+                print(self.data[name_])
+                res_obj = self.data[name_]
+                project_roles.append(res_obj)
 
-    #     if len(project_roles) == 1:
-    #         return project_roles[0]
-    #     return project_roles
+        if len(project_roles) == 0:
+            raise KeyError(f"Note for {project_role_} was not found.")
+
+        # return project_roles
 
     def find_hobby(self, hobby_: str) -> None:
         """Find a notes in the notes book by hobby.
