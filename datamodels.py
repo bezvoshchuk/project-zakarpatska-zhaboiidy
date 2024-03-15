@@ -220,6 +220,38 @@ class Record:
         """Add email to record, overwrite if already exists."""
         self.email = Email(email_str)
 
+    def remove_email(self):
+        """Remove email from record."""
+        self.email = None
+
+    def update_email(self, new_email: str):
+        """Update email in record.
+
+        Raises:
+            ValueError: if email is invalid.
+        """
+        self.email = Email(new_email)
+
+    def remove_address(self):
+        """Remove address from record."""
+        self.address = None
+
+    def update_address(self, new_address: str):
+        """Update address in record."""
+        self.address = Address(new_address)
+
+    def remove_birthday(self):
+        """Remove birthday from record."""
+        self.birthday = None
+
+    def update_birthday(self, new_birthday: str):
+        """Update birthday in record.
+
+        Raises:
+            ValueError: if birthday is invalid.
+        """
+        self.birthday = Birthday(new_birthday)
+
     def __str__(self):
         return (
             f"Contact name: {self.name.value}, "
