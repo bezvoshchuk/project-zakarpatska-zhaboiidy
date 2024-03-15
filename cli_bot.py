@@ -33,6 +33,7 @@ def input_error(error_msg_base):
                 return f"{error_msg_base}: {e}"
 
         return wrapper
+
     return decorator
 
 
@@ -62,14 +63,44 @@ class CliHelperBot:
             "update-email": self.update_email,
             "update-address": self.update_address,
             "update-birthday": self.update_birthday,
+            "help": self.help,
         }
         self._address_book = address_book
+
+    def help(self, *args: str) -> str:
+        """Outputs a help message for user."""
+        command_output = ""
+        if len(args) > 1:
+            command_output += (
+                "Warning: Command optionally expect one argument - command name. "
+                f"Received: {' '.join(args)}\n"
+            )
+
+        search_command = args[0] if args else None
+
+        if search_command:
+            if search_command not in self.supported_commands:
+                return "Command not supported. Type 'help' to get list of supported commands."
+
+            command_output += f"Command '{search_command}' help: "
+            command_output += f"\n{self.supported_commands[search_command].__doc__.split('Returns:')[0].strip()}"
+            return command_output
+
+        command_output += "Supported commands: "
+        for command in sorted(self.supported_commands):
+            command_output += f"\n{command}"
+        command_output += "\n\nType 'help <command>' to get help for specific command."
+
+        return command_output
 
     def stop(self, message: str):
         """Stop the bot execution.
 
         Args:
             message: Explanation why bot needs to stop
+
+        Returns:
+            None
 
         Raises:
             CliHelperSigStop: with explanation message
@@ -103,7 +134,7 @@ class CliHelperBot:
         """Add birthday date to already existing record.
 
         Args:
-            args: List with username and date to parse.
+            args: List with username and date to parse as YYYY.MM.DD.
 
         Returns:
             Command output
@@ -290,21 +321,26 @@ class CliHelperBot:
 
     @input_error(error_msg_base="Command 'birthdays' failed")
     def birthdays(self, *args: str) -> str:
-        """Prepares all contacts to be outputted into console that have BD in a following week.
+        """Prepares all contacts to be outputted into console that have BD in a following number of days.
 
         Args:
-            args: Command doesn't expect any args, list should be empty.
+            args: Number of days.
 
         Returns:
             Command output.
         """
         command_output = ""
         if len(args) != 1:
-            raise CommandOperationalError (
+            raise CommandOperationalError(
                 "Warning: Command expect one argument: number of days. "
                 f"Received: {' '.join(args)}\n"
             )
-        days = int(args[0])
+
+        try:
+            days = int(args[0])
+        except ValueError:
+            raise CommandOperationalError(
+                "Command expects a valid integer - number of days, please recheck your input.")
 
         results = self._address_book.get_birthdays_per_days(days).items()
         if not results:
