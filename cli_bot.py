@@ -513,7 +513,7 @@ class CliHelperBot:
         #         "command expects an input of two arguments: name and project tasks string, separated by a space. "
         #         f"Received: {' '.join(args)}"
         #     )
-        name, project_tasks = args
+        name, *project_tasks = args
         tasks_str = " ".join(t for t in project_tasks)
         print("project_tasks  tasks_str >>>>", tasks_str)
         try:
