@@ -1,3 +1,11 @@
+import datetime
+from datetime import date
+import re
+
+
+DATE_FORMAT = "%Y.%m.%d"
+
+
 class Field:
     def __init__(self, value):
         self.value = value
@@ -12,7 +20,7 @@ class Name(Field):
 
 class Birthday(Field):
     def __init__(self, value):
-        if value is not None and value != 'None':
+        if value is not None and value != "None":
             value = self.validate_date(value)
         super().__init__(value=value)
 
@@ -27,8 +35,8 @@ class Birthday(Field):
             )
 
     def __str__(self):
-        print('birthday', self.value, type(self.value))
-        if not self.value or self.value == 'None':
+        print("birthday", self.value, type(self.value))
+        if not self.value or self.value == "None":
             return "None"
         return self.value.strftime(DATE_FORMAT)
 

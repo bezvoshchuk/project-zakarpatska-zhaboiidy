@@ -39,7 +39,12 @@ def input_error(error_msg_base):
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except (CommandOperationalError, CommandNotSupported, ValueError, KeyError) as e:
+            except (
+                CommandOperationalError,
+                CommandNotSupported,
+                ValueError,
+                KeyError,
+            ) as e:
                 return f"{error_msg_base}: {e}"
 
         return wrapper
@@ -940,16 +945,16 @@ class CliHelperBot:
 
         while True:
             try:
-                autocomplete_list = (
-                    get_autocomplete(
-                        self._address_book.get_all_names(),
-                        list(self.supported_commands.keys())
-                    )
+                autocomplete_list = get_autocomplete(
+                    self._address_book.get_all_names(),
+                    list(self.supported_commands.keys()),
                 )
                 text = NestedCompleter.from_nested_dict(autocomplete_list)
                 session = PromptSession(completer=text, style=style)
 
-                user_input = session.prompt("Enter a command with arguments separated with a ' ' character: ")
+                user_input = session.prompt(
+                    "Enter a command with arguments separated with a ' ' character: "
+                )
 
                 command, args = self.parse_input(user_input)
                 command_output = self.execute_command(command, args)
