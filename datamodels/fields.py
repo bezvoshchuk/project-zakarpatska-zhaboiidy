@@ -35,7 +35,6 @@ class Birthday(Field):
             )
 
     def __str__(self):
-        print("birthday", self.value, type(self.value))
         if not self.value or self.value == "None":
             return "None"
         return self.value.strftime(DATE_FORMAT)
