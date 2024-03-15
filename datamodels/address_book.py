@@ -5,8 +5,8 @@ from datetime import date
 import warnings
 import re
 
-from fields import Address, Birthday, Email, Name, Phone
-from ..utils import get_birthdays_per_days
+from datamodels.fields import Address, Birthday, Email, Name, Phone
+from utils import get_birthdays_per_days
 
 
 class Record:
