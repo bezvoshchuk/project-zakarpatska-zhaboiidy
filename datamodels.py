@@ -65,8 +65,7 @@ class Birthday(Field):
             raise ValueError(f"Provided date {date_str} should follow format {DATE_FORMAT}, aborting ...")
 
     def __str__(self):
-        print('birthday', self.value, type(self.value))
-        if self.value == 'None':
+        if self.value == 'None' or self.value is None:
             return "None"
         return self.value.strftime(DATE_FORMAT)
 
