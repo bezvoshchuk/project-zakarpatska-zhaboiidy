@@ -612,8 +612,6 @@ class NotesBook(UserDict):
         if len(project_roles) == 0:
             raise KeyError(f"Note for {project_role_} was not found.")
 
-        # return project_roles
-
     def find_hobby(self, hobby_: str) -> None:
         """Find a notes in the notes book by hobby.
 
@@ -634,8 +632,6 @@ class NotesBook(UserDict):
 
         if len(hobby_notes) == 0:
             raise KeyError(f"Notes with {hobby_} were not found.")
-
-        # return hobby_notes
 
     def delete(self, name_: str) -> None:
         """Delete a note in the notes book by name.
