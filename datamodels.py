@@ -52,24 +52,22 @@ class Name(Field):
 
 class Birthday(Field):
     def __init__(self, value):
-        validated_date = self.validate_date(value)
-        super().__init__(value=validated_date)
+        if value is not None and value != 'None':
+            value = self.validate_date(value)
+        super().__init__(value=value)
 
     @staticmethod
     def validate_date(date_str: str) -> date:
         """Validate date string, raises ValueError if date cannot be parsed"""
-
-        if date_str == 'None':
-            return None
-
         try:
             return datetime.datetime.strptime(date_str, DATE_FORMAT).date()
         except Exception:
             raise ValueError(f"Provided date {date_str} should follow format {DATE_FORMAT}, aborting ...")
 
     def __str__(self):
-        if self.value is None:
-            return "Not set"
+        print('birthday', self.value, type(self.value))
+        if self.value == 'None':
+            return "None"
         return self.value.strftime(DATE_FORMAT)
 
 
@@ -125,13 +123,9 @@ class Record:
         self.phones: list[Phone] = [
             Phone(phone) for phone in (phones or [])
         ]
-        self.birthday = (
-            Birthday(birthday) if birthday is not None else None
-        )
+        self.birthday = Birthday(birthday)
         self.address: Address = Address(address)
-        self.email = (
-            Email(email) if email is not None else None
-        )
+        self.email = Email(email)
 
     def __hash__(self):
         return hash(self.name.value)
@@ -256,7 +250,8 @@ class Record:
         Raises:
             ValueError: if birthday is invalid.
         """
-        self.birthday = Birthday(new_birthday)
+        validated_date = Birthday.validate_date(new_birthday)
+        self.birthday = Birthday(validated_date)
 
     def __str__(self):
         return (
