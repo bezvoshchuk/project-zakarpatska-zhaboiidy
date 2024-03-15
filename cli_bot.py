@@ -421,13 +421,14 @@ class CliHelperBot:
             CommandOperationalError if user does not exist.
             ValueError if date is invalid.
         """
-        if len(args) <= 2:
-            raise CommandOperationalError(
-                "command expects an input of two arguments: name and project tasks string, separated by a space. "
-                f"Received: {' '.join(args)}"
-            )
+        # if len(args) <= 2:
+        #     raise CommandOperationalError(
+        #         "command expects an input of two arguments: name and project tasks string, separated by a space. "
+        #         f"Received: {' '.join(args)}"
+        #     )
         name, project_tasks = args
-        print(project_tasks, "project_tasks")
+        tasks_str = " ".join(t for t in project_tasks)
+        print("project_tasks  tasks_str >>>>", tasks_str)
         try:
             note = self._notes_book.find(name)
 
@@ -437,7 +438,7 @@ class CliHelperBot:
                 f"If you want to add number, please use 'add' command."
             ) from e
 
-        note.add_project_tasks(project_tasks)
+        note.add_project_tasks(tasks_str)
         return f"Note {name} updated"
 
     @input_error(error_msg_base="Command 'find-note' failed")
