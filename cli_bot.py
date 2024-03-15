@@ -68,8 +68,9 @@ class CliHelperBot:
             "add-email": self.add_email,
             "add-note": self.add_note,
             "delete-note": self.delete_note,
-            "add-project-tasks": self.add_project_tasks,
             "find-note": self.find_note,
+            "all-notes": self.all_notes,
+            "add-project-tasks": self.add_project_tasks,
             "find-project-role": self.find_project_role,
             "find-hobby": self.find_hobby,
             "delete-contact": self.delete_contact,
@@ -609,6 +610,28 @@ class CliHelperBot:
         result = self._notes_book.find_hobby(hobby_=hobby)
 
         return result
+
+    def all_notes(self, *args: str) -> str:
+        """Prepares notes to be outputted into console.
+
+        Args:
+            args: Command doesn't expect any args, list should be empty.
+
+        Returns:
+            Command output.
+        """
+        command_output = ""
+        if args:
+            command_output += (
+                "Warning: Command doesn't expect any arguments. "
+                f"Received: {' '.join(args)}\n"
+            )
+
+        command_output += "All Notes: "
+        for note in self._notes_book.values():
+            command_output += f"\n{note}"
+
+        return command_output
 
     @input_error(error_msg_base="Command 'delete-contact' failed")
     def delete_contact(self, *args: str):
