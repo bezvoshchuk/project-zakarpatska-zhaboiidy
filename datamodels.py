@@ -52,8 +52,9 @@ class Name(Field):
 
 class Birthday(Field):
     def __init__(self, value):
-        validated_date = self.validate_date(value)
-        super().__init__(value=validated_date)
+        if value is not None and value != 'None':
+            value = self.validate_date(value)
+        super().__init__(value=value)
 
     @staticmethod
     def validate_date(date_str: str) -> date:
@@ -64,6 +65,9 @@ class Birthday(Field):
             raise ValueError(f"Provided date {date_str} should follow format {DATE_FORMAT}, aborting ...")
 
     def __str__(self):
+        print('birthday', self.value, type(self.value))
+        if self.value == 'None':
+            return "None"
         return self.value.strftime(DATE_FORMAT)
 
 
@@ -113,19 +117,15 @@ class Email(Field):
 
 
 class Record:
-    def __init__(self, name_: str, phones: list[str] = None, birthday: date = None, address: date = None,
-                 email: date = None):
+    def __init__(self, name_: str, phones: list[str] = None, birthday: date = None, address: str = None,
+                 email: str = None):
         self.name: Name = Name(name_)
         self.phones: list[Phone] = [
             Phone(phone) for phone in (phones or [])
         ]
-        self.birthday = (
-            Birthday(birthday) if birthday is not None else None
-        )
+        self.birthday = Birthday(birthday)
         self.address: Address = Address(address)
-        self.email = (
-            Email(email) if email is not None else None
-        )
+        self.email = Email(email)
 
     def __hash__(self):
         return hash(self.name.value)
@@ -250,7 +250,8 @@ class Record:
         Raises:
             ValueError: if birthday is invalid.
         """
-        self.birthday = Birthday(new_birthday)
+        validated_date = Birthday.validate_date(new_birthday)
+        self.birthday = Birthday(validated_date)
 
     def __str__(self):
         return (
@@ -408,6 +409,10 @@ class AddressBook(UserDict):
         _record = self.find(name_)
         del self.data[name_]
 
+    def get_all_names(self) -> list[str]:
+        """Get all names from address book."""
+        return list(self.data.keys())
+
 
 class AddressBookReader:
     address_book: None | AddressBook = None
@@ -431,6 +436,8 @@ class AddressBookReader:
             json_in.close()
         except FileNotFoundError:
             print("Users data file don't exist, returning empty list ...")
+        except json.JSONDecodeError:
+            print("Users data file is not a valid JSON, returning empty list ...")
 
         self.address_book.load_data_from_json(users_data)
 
