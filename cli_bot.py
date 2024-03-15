@@ -73,6 +73,7 @@ class CliHelperBot:
             "add-project-tasks": self.add_project_tasks,
             "find-project-role": self.find_project_role,
             "find-hobby": self.find_hobby,
+            "update-hobby": self.update_hobby,
             "delete-contact": self.delete_contact,
             "delete-email": self.delete_email,
             "delete-phone": self.delete_phone,
@@ -610,6 +611,38 @@ class CliHelperBot:
         result = self._notes_book.find_hobby(hobby_=hobby)
 
         return result
+
+    @input_error(error_msg_base="Command 'update' failed")
+    def update_hobby(self, *args: str) -> str:
+        """Change specific hobbyin the note.
+
+        Args:
+            args: List with name, old hobby and new hobby of note to add.
+
+        Returns:
+            Command output.
+
+        Raises:
+            CommandOperationalError: if wrong arguments or note doesn't exist
+        """
+        if len(args) != 3:
+            raise CommandOperationalError(
+                "command expects an input of three arguments: name, old hobby and new hobby, separated by a space. "
+                f"Received: {' '.join(args)}"
+            )
+
+        name, old_hobby, new_hobby = args
+        try:
+            note = self.find_note(name)
+            print(note)
+
+        except KeyError as e:
+            raise CommandOperationalError(
+                f"note with name {name} doesn't exist. "
+            ) from e
+
+        note.edit_hobby(hobby=old_hobby, new_hobby=new_hobby)
+        return f"Note {name} updated with new hobby: {new_hobby}."
 
     def all_notes(self, *args: str) -> str:
         """Prepares notes to be outputted into console.
