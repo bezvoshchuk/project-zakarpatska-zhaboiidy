@@ -335,10 +335,13 @@ class AddressBook(UserDict):
             for char in number_query:
                 # Replace a single search character with any digit to account for input error
                 updated_query = number_query.replace(char, r"\d")
-                results.update([
-                    record for record in self.data.values()
-                    if record.search_phone(updated_query)
-                ])
+                results.update(
+                    [
+                        record
+                        for record in self.data.values()
+                        if record.search_phone(updated_query)
+                    ]
+                )
 
         return list(results)
 
@@ -352,11 +355,9 @@ class AddressBook(UserDict):
             All matched records if any.
         """
         results = [
-            record for record in self.data.values()
-            if (
-                query in record.name.value
-                or query in record.email.value
-            )
+            record
+            for record in self.data.values()
+            if (query in record.name.value or query in record.email.value)
         ]
 
         # Advanced search will make too much false positives if input term is too short.
@@ -371,13 +372,16 @@ class AddressBook(UserDict):
 
             for char in query:
                 updated_query = query.replace(char, ".")
-                results.update([
-                    record for record in self.data.values()
-                    if (
-                        re.search(updated_query, record.name.value) is not None
-                        or re.search(updated_query, record.email.value) is not None
-                    )
-                ])
+                results.update(
+                    [
+                        record
+                        for record in self.data.values()
+                        if (
+                            re.search(updated_query, record.name.value) is not None
+                            or re.search(updated_query, record.email.value) is not None
+                        )
+                    ]
+                )
 
         return list(results)
 
@@ -428,51 +432,27 @@ class AddressBook(UserDict):
         return list(self.data.keys())
 
 
-# class AddressBookReader:
-#     address_book: None | AddressBook = None
-
-#     def __enter__(self):
-#         self.address_book = AddressBook()
-#         self.load_existing_users()
-#         return self.address_book
-
-#     def __exit__(self, exc_type, exc_val, exc_tb):
-#         self.save_existing_users()
-
-#     def load_existing_users(self):
-#         """Load existing data from JSON_DB_PATH, fallback to empty list, if file not present."""
-#         users_data = []
-
-#         try:
-#             print("Loading existing users data ...")
-#             json_in = open(JSON_DB_PATH, "r")
-#             users_data = json.load(json_in)
-#             json_in.close()
-#         except FileNotFoundError:
-#             print("Users data file don't exist, returning empty list ...")
-
-#         self.address_book.load_data_from_json(users_data)
-
-#     def save_existing_users(self):
-#         """Save existing data to JSON_DB_PATH."""
-#         with open(JSON_DB_PATH, "w") as json_out:
-#             print("Saving existing users data ...")
-#             json.dump(self.address_book.dump_data_to_json(), json_out)
-
-
 class ProjectRole(Field):
+    """Generic class for project roles"""
+
     pass
 
 
 class ProjectTasks(Field):
+    """Generic class for project tasks"""
+
     pass
 
 
 class Hobby(Field):
+    """Generic class for hobbies"""
+
     pass
 
 
 class Note:
+    """This class initialises new Note with the name and project role"""
+
     def __init__(
         self,
         name_: str,
@@ -558,6 +538,8 @@ class Note:
 
 
 class NotesBook(UserDict):
+    """Class that gathers all notes into one dict with the names of notes as keys and Note classes as values"""
+
     data = {}
 
     def print_notes_book(self):
@@ -666,38 +648,6 @@ class NotesBook(UserDict):
         """
 
         del self.data[name_]
-
-
-# class NotesBookReader:
-#     notes_book: None | NotesBook = None
-
-#     def __enter__(self):
-#         self.notes_book = NotesBook()
-#         self.load_existing_notes()
-#         return self.notes_book
-
-#     def __exit__(self, exc_type, exc_val, exc_tb):
-#         self.save_existing_notes()
-
-#     def load_existing_notes(self):
-#         """Load existing data from NOTES_JSON_DB_PATH, fallback to empty list, if file not present."""
-#         notes_data = []
-
-#         try:
-#             print("Loading existing notes data ...")
-#             json_in = open(NOTES_JSON_DB_PATH, "r")
-#             notes_data = json.load(json_in)
-#             json_in.close()
-#         except FileNotFoundError:
-#             print("Notes data file don't exist, returning empty list ...")
-
-#         self.notes_book.load_data_from_json(notes_data)
-
-#     def save_existing_notes(self):
-#         """Save existing notes data to NOTES_JSON_DB_PATH."""
-#         with open(NOTES_JSON_DB_PATH, "w") as json_out:
-#             print("Saving existing notes data ...")
-#             json.dump(self.notes_book.dump_data_to_json(), json_out)
 
 
 class BookReader:

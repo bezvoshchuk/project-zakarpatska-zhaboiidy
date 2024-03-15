@@ -574,7 +574,7 @@ class CliHelperBot:
 
         return note
 
-    # @input_error(error_msg_base="Command 'find-project-role' failed")
+    @input_error(error_msg_base="Command 'find-project-role' failed")
     def find_project_role(self, *args: str) -> Note:
         """Find notes by project role.
 
@@ -593,7 +593,7 @@ class CliHelperBot:
 
         return result
 
-    # @input_error(error_msg_base="Command 'find-hobby' failed")
+    @input_error(error_msg_base="Command 'find-hobby' failed")
     def find_hobby(self, *args: str) -> Note:
         """Find notes by hobby.
 
