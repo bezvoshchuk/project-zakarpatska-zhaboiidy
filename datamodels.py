@@ -221,9 +221,8 @@ class Record:
         self.email = Email(email_str)
 
     def remove_email(self):
-        """Remove email from record.
-        """
-        self.email = ""
+        """Remove email from record."""
+        self.email = None
 
     def update_email(self, new_email: str):
         """Update email in record.
@@ -234,21 +233,15 @@ class Record:
         self.email = Email(new_email)
 
     def remove_address(self):
-        """Remove address from record.
-        """
+        """Remove address from record."""
         self.address = None
 
     def update_address(self, new_address: str):
-        """Update address in record.
-
-        Raises:
-            KeyError: if address does not exist.
-        """
+        """Update address in record."""
         self.address = Address(new_address)
 
     def remove_birthday(self):
-        """Remove birthday from record.
-        """
+        """Remove birthday from record."""
         self.birthday = None
 
     def update_birthday(self, new_birthday: str):

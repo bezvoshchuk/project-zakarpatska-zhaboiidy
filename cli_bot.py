@@ -411,7 +411,7 @@ class CliHelperBot:
         record.add_email(email_str)
         return f"Contact {username} updated with email: {email_str}."
 
-    @input_error(error_msg_base="Command 'delete' failed")
+    @input_error(error_msg_base="Command 'delete-contact' failed")
     def delete_contact(self, *args: str):
         """Delete contact in Address Book.
 
@@ -424,6 +424,11 @@ class CliHelperBot:
         Raises:
             CommandOperationalError: if wrong arguments or user doesn't exist
         """
+        if len(args) != 1:
+            raise CommandOperationalError(
+                "command expects an input of one argument: username. "
+                f"Received: {' '.join(args)}"
+            )
         username = args[0]
         try:
             self._address_book.delete(username)
@@ -434,11 +439,12 @@ class CliHelperBot:
             ) from e
         return f"Contact {username} removed from Address book."
 
+    @input_error(error_msg_base="Command 'delete-phone' failed")
     def delete_phone(self, *args: str):
         """Delete phone by username.
 
         Args:
-            args: List of one argument - username
+            args: List of two argument - username and phone.
 
         Returns:
             Command output.
@@ -459,6 +465,7 @@ class CliHelperBot:
         record.remove_phone(phone)
         return f"Phone of contact  {username} removed from Address book."
 
+    @input_error(error_msg_base="Command 'delete-email' failed")
     def delete_email(self, *args: str):
         """Delete user email by username.
 
@@ -484,6 +491,7 @@ class CliHelperBot:
         record.remove_email()
         return f"Email of contact  {username} removed from Address book."
 
+    @input_error(error_msg_base="Command 'delete-address' failed")
     def delete_address(self, *args: str):
         """Delete user address by username.
 
@@ -509,6 +517,7 @@ class CliHelperBot:
         record.remove_address()
         return f"Address of contact  {username} removed from Address book."
 
+    @input_error(error_msg_base="Command 'delete-birthday' failed")
     def delete_birthday(self, *args: str):
         """Delete user birthday by username.
 
@@ -534,11 +543,13 @@ class CliHelperBot:
         record.remove_birthday()
         return f"Birthday of contact {username} removed from Address book."
 
+
+    @input_error(error_msg_base="Command 'update-email' failed")
     def update_email(self, *args: str):
         """Update user email by username.
 
         Args:
-            args: List of one argument - username and email
+            args: List of two argument - username and email
 
         Returns:
             Command output.
@@ -559,11 +570,12 @@ class CliHelperBot:
         record.update_email(email)
         return f"Email of contact  {username} updated."
 
+    @input_error(error_msg_base="Command 'update-address' failed")
     def update_address(self, *args: str):
         """Update user address by username.
 
         Args:
-            args: List of one argument - username and address
+            args: List of two argument - username and address
 
         Returns:
             Command output.
@@ -584,11 +596,12 @@ class CliHelperBot:
         record.update_address(address)
         return f"Address of contact  {username} updated."
     
+    @input_error(error_msg_base="Command 'update-birthday' failed")
     def update_birthday(self, *args: str):
         """Update user birthday by username.
 
         Args:
-            args: List of one argument - username and birthday
+            args: List of two argument - username and birthday
 
         Returns:
             Command output.
