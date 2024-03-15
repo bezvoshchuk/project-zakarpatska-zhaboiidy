@@ -1,123 +1,23 @@
 from __future__ import annotations
 
-import argparse
-import datetime
 from collections import UserDict
 from datetime import date
-import json
 import warnings
 import re
 
-from utils import get_birthdays_per_days
-
-DATE_FORMAT = "%Y.%m.%d"
-JSON_DB_PATH = "./users.json"
-
-argument_parser = argparse.ArgumentParser(
-    description=(
-        "The script that displays work of added data classes. Can be run in two modes: "
-        "default and db_mode, controlled by db_mode parameter. In db_mode address book will"
-        "work with users.json file reading and adding data to it."
-    )
-)
-argument_parser.add_argument(
-    "--db_mode",
-    dest="db_mode",
-    type=str,
-    default=False,
-    required=False,
-    help="Set this to true if you want to switch to db mode."
-)
-argument_parser.add_argument(
-    "--reset_data",
-    dest="reset_data",
-    type=str,
-    default=False,
-    required=False,
-    help="Set this to true if you want to reset db data."
-)
-
-
-class Field:
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return str(self.value)
-
-
-class Name(Field):
-    pass
-
-
-class Birthday(Field):
-    def __init__(self, value):
-        if value is not None and value != 'None':
-            value = self.validate_date(value)
-        super().__init__(value=value)
-
-    @staticmethod
-    def validate_date(date_str: str) -> date:
-        """Validate date string, raises ValueError if date cannot be parsed"""
-        try:
-            return datetime.datetime.strptime(date_str, DATE_FORMAT).date()
-        except Exception:
-            raise ValueError(f"Provided date {date_str} should follow format {DATE_FORMAT}, aborting ...")
-
-    def __str__(self):
-        if self.value == 'None' or self.value is None:
-            return "None"
-        return self.value.strftime(DATE_FORMAT)
-
-
-class Phone(Field):
-    def __init__(self, phone: str):
-        validated_phone = self.validate_phone(phone)
-        super().__init__(value=validated_phone)
-
-    @staticmethod
-    def validate_phone(phone: str):
-        """Validate phone number, raises ValueError if phone length is less than 10 digits"""
-        try:
-            if len(phone) != 10:
-                raise ValueError
-
-            for char in phone:
-                if not char.isdigit():
-                    raise ValueError
-        except ValueError as e:
-            raise ValueError(f"Phone should have 10 digits, entered: {phone}") from e
-
-        return phone
-
-
-class Address(Field):
-    def __init__(self, address: str):
-        self.address = address
-        super().__init__(value=address)
-
-
-class Email(Field):
-    def __init__(self, email: str):
-        super().__init__(value=email)
-
-    @staticmethod
-    def validate_email(email: str):
-        """Validate email, raises ValueError if email is not valid"""
-        try:
-            pattern = r'^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$'
-            if re.match(pattern, email):
-                return email
-            else:
-                raise ValueError
-
-        except ValueError as e:
-            raise ValueError(f"Email is not valid, entered: {email}") from e
+from fields import Address, Birthday, Email, Name, Phone
+from ..utils import get_birthdays_per_days
 
 
 class Record:
-    def __init__(self, name_: str, phones: list[str] = None, birthday: date = None, address: str = None,
-                 email: str = None):
+    def __init__(
+        self,
+        name_: str,
+        phones: list[str] = None,
+        birthday: date = None,
+        address: str = None,
+        email: str = None,
+    ):
         self.name: Name = Name(name_)
         self.phones: list[Phone] = [
             Phone(phone) for phone in (phones or [])
@@ -144,7 +44,9 @@ class Record:
         """
         try:
             self.find_phone(phone)
-            warnings.warn(f"phone {phone} was already present for user {self.name}, skipping ...")
+            warnings.warn(
+                f"phone {phone} was already present for user {self.name}, skipping ..."
+            )
         except KeyError:
             self.phones.append(Phone(phone))
 
@@ -255,7 +157,7 @@ class Record:
     def __str__(self):
         return (
             f"Contact name: {self.name.value}, "
-            f"contact email: {self.email.value} "
+            f"contact email: {self.email.value}, "
             f"phones: {'; '.join(p.value for p in self.phones)}"
         )
 
@@ -280,7 +182,7 @@ class AddressBook(UserDict):
                 "phones": [phone.value for phone in _record.phones],
                 "birthday": str(_record.birthday),
                 "address": str(_record.address),
-                "email": str(_record.email)
+                "email": str(_record.email),
             }
             for _record in self.data.values()
         ]
@@ -320,10 +222,13 @@ class AddressBook(UserDict):
             for char in number_query:
                 # Replace a single search character with any digit to account for input error
                 updated_query = number_query.replace(char, r"\d")
-                results.update([
-                    record for record in self.data.values()
-                    if record.search_phone(updated_query)
-                ])
+                results.update(
+                    [
+                        record
+                        for record in self.data.values()
+                        if record.search_phone(updated_query)
+                    ]
+                )
 
         return list(results)
 
@@ -337,11 +242,9 @@ class AddressBook(UserDict):
             All matched records if any.
         """
         results = [
-            record for record in self.data.values()
-            if (
-                query in record.name.value
-                or query in record.email.value
-            )
+            record
+            for record in self.data.values()
+            if (query in record.name.value or query in record.email.value)
         ]
 
         # Advanced search will make too much false positives if input term is too short.
@@ -356,13 +259,16 @@ class AddressBook(UserDict):
 
             for char in query:
                 updated_query = query.replace(char, ".")
-                results.update([
-                    record for record in self.data.values()
-                    if (
-                        re.search(updated_query, record.name.value) is not None
-                        or re.search(updated_query, record.email.value) is not None
-                    )
-                ])
+                results.update(
+                    [
+                        record
+                        for record in self.data.values()
+                        if (
+                            re.search(updated_query, record.name.value) is not None
+                            or re.search(updated_query, record.email.value) is not None
+                        )
+                    ]
+                )
 
         return list(results)
 
@@ -411,37 +317,3 @@ class AddressBook(UserDict):
     def get_all_names(self) -> list[str]:
         """Get all names from address book."""
         return list(self.data.keys())
-
-
-class AddressBookReader:
-    address_book: None | AddressBook = None
-
-    def __enter__(self):
-        self.address_book = AddressBook()
-        self.load_existing_users()
-        return self.address_book
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.save_existing_users()
-
-    def load_existing_users(self):
-        """Load existing data from JSON_DB_PATH, fallback to empty list, if file not present."""
-        users_data = []
-
-        try:
-            print("Loading existing users data ...")
-            json_in = open(JSON_DB_PATH, "r")
-            users_data = json.load(json_in)
-            json_in.close()
-        except FileNotFoundError:
-            print("Users data file don't exist, returning empty list ...")
-        except json.JSONDecodeError:
-            print("Users data file is not a valid JSON, returning empty list ...")
-
-        self.address_book.load_data_from_json(users_data)
-
-    def save_existing_users(self):
-        """Save existing data to JSON_DB_PATH."""
-        with open(JSON_DB_PATH, "w") as json_out:
-            print("Saving existing users data ...")
-            json.dump(self.address_book.dump_data_to_json(), json_out)
