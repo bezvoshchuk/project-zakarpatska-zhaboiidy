@@ -19,9 +19,7 @@ class Record:
         email: str = None,
     ):
         self.name: Name = Name(name_)
-        self.phones: list[Phone] = [
-            Phone(phone) for phone in (phones or [])
-        ]
+        self.phones: list[Phone] = [Phone(phone) for phone in (phones or [])]
         self.birthday = Birthday(birthday)
         self.address: Address = Address(address)
         self.email = Email(email)
@@ -171,8 +169,7 @@ class AddressBook(UserDict):
 
     def load_data_from_json(self, json_data):
         self.data = {
-            _record_data["name_"]: Record(**_record_data)
-            for _record_data in json_data
+            _record_data["name_"]: Record(**_record_data) for _record_data in json_data
         }
 
     def dump_data_to_json(self):
@@ -211,8 +208,7 @@ class AddressBook(UserDict):
             All matched records if any.
         """
         results = [
-            record for record in self.data.values()
-            if record.search_phone(number_query)
+            record for record in self.data.values() if record.search_phone(number_query)
         ]
 
         # Advanced search will make too much false positives if input term is too short.
