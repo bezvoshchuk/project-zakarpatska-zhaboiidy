@@ -569,6 +569,12 @@ class CliHelperBot:
             CommandOperationalError: if wrong arguments or no note found
         """
 
+        if len(args) != 1:
+            raise CommandOperationalError(
+                "command expects an input of one argument: name string."
+                f"Received: {len(args)}"
+            )
+
         [name] = args
         note = self._notes_book.find(name_=name)
 
@@ -588,6 +594,12 @@ class CliHelperBot:
             CommandOperationalError: if wrong arguments or no note found
         """
 
+        if len(args) != 1:
+            raise CommandOperationalError(
+                "command expects an input of one argument: project role string."
+                f"Received: {len(args)}"
+            )
+
         [project_role] = args
         result = self._notes_book.find_project_role(project_role_=project_role)
 
@@ -606,7 +618,11 @@ class CliHelperBot:
         Raises:
             CommandOperationalError: if wrong arguments or no note found
         """
-
+        if len(args) != 1:
+            raise CommandOperationalError(
+                "command expects an input of one argument: hobby string."
+                f"Received: {len(args)}"
+            )
         [hobby] = args
         result = self._notes_book.find_hobby(hobby_=hobby)
 

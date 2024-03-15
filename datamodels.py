@@ -667,9 +667,8 @@ class BookReader:
 
         try:
             print("Loading existing notes data ...")
-            json_in = open(NOTES_JSON_DB_PATH, "r")
-            notes_data = json.load(json_in)
-            json_in.close()
+            with open(NOTES_JSON_DB_PATH, "r") as json_in:
+                json.load(json_in)
         except FileNotFoundError:
             print("Notes data file don't exist, returning empty list ...")
 
@@ -687,9 +686,8 @@ class BookReader:
 
         try:
             print("Loading existing users data ...")
-            json_in = open(JSON_DB_PATH, "r")
-            users_data = json.load(json_in)
-            json_in.close()
+            with open(JSON_DB_PATH, "r") as json_in:
+                json.load(json_in)
         except FileNotFoundError:
             print("Users data file don't exist, returning empty list ...")
 
