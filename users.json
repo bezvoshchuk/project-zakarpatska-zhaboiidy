@@ -2,7 +2,7 @@
   {
     "name_": "Dmytro",
     "phones": ["0933903900"],
-    "birthday": "None",
+    "birthday": "1986.05.21",
     "address": "None",
     "email": "None"
   },
@@ -23,7 +23,7 @@
   {
     "name_": "Yana",
     "phones": ["1234567890"],
-    "birthday": "19/03/1987",
+    "birthday": "1987.03.19",
     "address": "Kyiv is my home",
     "email": "iana.matrosova@gmail.com"
   }
