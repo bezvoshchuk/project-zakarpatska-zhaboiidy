@@ -56,7 +56,9 @@ class Note:
             A Hobby object that is identical to the one being looked up.
         """
         for _hobby in self.hobbies:
-            if _hobby.value == hobby:
+            print(_hobby.value.lower(), " _hobby.value.lower()")
+            print(hobby.lower(), "hobby.lower()")
+            if _hobby.value.lower() == hobby.lower():
                 return _hobby
         else:
             raise KeyError(
@@ -166,7 +168,7 @@ class NotesBook(UserDict):
         notes = list(
             filter(
                 lambda note_: note_.project_role.value == project_role_,
-                self.data.values()
+                self.data.values(),
             )
         )
 
@@ -186,8 +188,10 @@ class NotesBook(UserDict):
         """
         notes = list(
             filter(
-                lambda note_: any(_hobby.value == hobby_ for _hobby in note_.hobbies),
-                self.data.values()
+                lambda note_: any(
+                    _hobby.value.lower() == hobby_.lower() for _hobby in note_.hobbies
+                ),
+                self.data.values(),
             )
         )
 

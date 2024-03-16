@@ -76,6 +76,7 @@ class CliHelperBot:
             "find-note": self.find_note,
             "all-notes": self.all_notes,
             "add-project-tasks": self.add_project_tasks,
+            "add-hobby": self.add_hobby,
             "find-project-role": self.find_project_role,
             "find-hobby": self.find_hobby,
             "update-hobby": self.update_hobby,
@@ -559,8 +560,7 @@ class CliHelperBot:
 
         except KeyError as e:
             raise CommandOperationalError(
-                f"user with name {name} doesn't exist. "
-                f"If you want to add number, please use 'add' command."
+                f"note with name {name} doesn't exist. "
             ) from e
 
         note.add_project_tasks(tasks_str)
@@ -619,6 +619,39 @@ class CliHelperBot:
             command_output += f"\n{record}"
 
         return command_output
+
+    @input_error(error_msg_base="Command 'add-hobby' failed")
+    def add_hobby(self, *args: str) -> str:
+        """Add hobby to already existing note by name.
+
+        Args:
+            args: List with name and hobby.
+
+        Returns:
+            Command output
+
+        Raises:
+            CommandOperationalError if note does not exist.
+        """
+        if len(args) <= 2:
+            raise CommandOperationalError(
+                "command expects an input of two arguments: name and hobby, separated by a space. "
+                f"Received: {' '.join(args)}"
+            )
+
+        name, *hobby = args
+        hobby_str = " ".join(t for t in hobby)
+
+        try:
+            note = self._notes_book.find(name)
+
+        except KeyError as e:
+            raise CommandOperationalError(
+                f"note with name {name} doesn't exist. "
+            ) from e
+
+        note.add_hobby(hobby_str)
+        return f"Note {name} updated with hobby: {hobby_str}."
 
     @input_error(error_msg_base="Command 'find-hobby' failed")
     def find_hobby(self, *args: str) -> str:
