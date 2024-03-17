@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import UserDict
 import warnings
 
-from datamodels.fields import Name, Hobby, ProjectRole, ProjectTasks
+from .fields import Name, Hobby, ProjectRole, ProjectTasks
 
 
 class Note:

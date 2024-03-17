@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import json
+import os
 
-from datamodels import AddressBook, NotesBook
+from source.datamodels import AddressBook, NotesBook
+from source.utils import get_root_path
 
 
 DATE_FORMAT = "%Y.%m.%d"
-JSON_DB_PATH = "./users.json"
-NOTES_JSON_DB_PATH = "./notes.json"
+ROOT_PROJECT_PATH = get_root_path()
+JSON_DB_PATH = os.path.join(ROOT_PROJECT_PATH, "users.json")
+NOTES_JSON_DB_PATH = os.path.join(ROOT_PROJECT_PATH, "notes.json")
 
 
 class BookReader:

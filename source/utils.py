@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 import datetime
+import os
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -32,3 +33,7 @@ def get_birthdays_per_days(users_data: list[Record], days) -> dict[str, list[Rec
             result[birthday_date.strftime("%d %b (%A)")].append(record)
 
     return result
+
+
+def get_root_path():
+    return os.path.dirname(os.path.dirname(__file__))

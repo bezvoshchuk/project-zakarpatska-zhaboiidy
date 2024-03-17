@@ -3,18 +3,17 @@ from __future__ import annotations
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import NestedCompleter
 
-import re
 from typing import Any
 from functools import wraps
 
-from autocomplete import get_autocomplete, style
-from datamodels import (
+from source.autocomplete import get_autocomplete, style
+from source.datamodels import (
     AddressBook,
     Record,
     NotesBook,
     Note,
 )
-from reader import BookReader
+from source.reader import BookReader
 
 
 class BaseCliHelperException(Exception):
@@ -1008,7 +1007,11 @@ class CliHelperBot:
                 raise
 
 
-if __name__ == "__main__":
+def main():
     with BookReader() as book:
         cli_helper = CliHelperBot(book.address_book, book.notes_book)
         cli_helper.main()
+
+
+if __name__ == "__main__":
+    main()
