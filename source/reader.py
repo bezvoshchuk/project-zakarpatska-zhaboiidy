@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from datamodels import AddressBook, NotesBook
+from source.datamodels import AddressBook, NotesBook
 
 
 DATE_FORMAT = "%Y.%m.%d"
