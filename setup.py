@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='cli_bot',
-    version='1.0',
+    version='1.0.1',
     author='Project Team 1',
     description='Project Zakarpatski Zhaboiidy',
     url='https://github.com/bezvoshchuk/project-zakarpatski-zhaboiidy',

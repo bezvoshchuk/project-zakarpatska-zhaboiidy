@@ -3,23 +3,17 @@
     "name_": "Dmytro",
     "phones": ["0933903900"],
     "birthday": "1986.05.21",
-    "address": "None",
-    "email": "None"
+    "address": "President Office",
+    "email": "bezvoshchuk@gmail.com"
   },
   {
     "name_": "Mama",
     "phones": ["0505005050"],
-    "birthday": "None",
-    "address": "None",
+    "birthday": "1965.11.11",
+    "address": "Your heart and your soul",
     "email": "None"
   },
-  {
-    "name_": "Vlad",
-    "phones": ["0632230227"],
-    "birthday": "None",
-    "address": "None",
-    "email": "None"
-  },
+  { "name_": "Vlad", "phones": ["0632230227"], "birthday": "None", "address": "None", "email": "None" },
   {
     "name_": "Yana",
     "phones": ["1234567890"],
