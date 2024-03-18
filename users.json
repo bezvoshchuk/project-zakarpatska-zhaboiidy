@@ -3,22 +3,98 @@
     "name_": "Dmytro",
     "phones": ["0933903900"],
     "birthday": "1986.05.21",
-    "address": "President Office",
+    "address": "Kyiv",
     "email": "bezvoshchuk@gmail.com"
   },
   {
     "name_": "Mama",
     "phones": ["0505005050"],
     "birthday": "1965.11.11",
-    "address": "Your heart and your soul",
-    "email": "None"
+    "address": "Lviv",
+    "email": "mama@protone.com"
   },
-  { "name_": "Vlad", "phones": ["0632230227"], "birthday": "None", "address": "None", "email": "None" },
+  {
+    "name_": "Vlad",
+    "phones": ["0632230227"],
+    "birthday": "1988.03.20",
+    "address": "Kyiv",
+    "email": "polyen.v@gmail.com"
+  },
   {
     "name_": "Yana",
     "phones": ["1234567890"],
     "birthday": "1987.03.19",
-    "address": "Kyiv is my home",
+    "address": "Kyiv",
     "email": "iana.matrosova@gmail.com"
+  },
+  {
+    "name_": "Bill",
+    "phones": ["0102030405"],
+    "birthday": "1987.05.19",
+    "address": "Austin",
+    "email": "billy@yahoo.com"
+  },
+  {
+    "name_": "Mike",
+    "phones": ["0608070900"],
+    "birthday": "1987.03.10",
+    "address": "Washington",
+    "email": "mikelangello@yahoo.com"
+  },
+  {
+    "name_": "Oleh",
+    "phones": ["0684567890"],
+    "birthday": "1987.03.19",
+    "address": "Zhytomyr",
+    "email": "oleh@gmail.com"
+  },
+  {
+    "name_": "Yuri",
+    "phones": ["0677778899"],
+    "birthday": "1980.03.18",
+    "address": "Kyiv",
+    "email": "yuri_hunter@ukr.net"
+  },
+  {
+    "name_": "Svitlana",
+    "phones": ["0998873355"],
+    "birthday": "2000.03.10",
+    "address": "Odesa",
+    "email": "svitlana@ukr.net"
+  },
+  {
+    "name_": "Serhii",
+    "phones": ["0998876655"],
+    "birthday": "2000.11.11",
+    "address": "Warsaw",
+    "email": "serj@outlook.com"
+  },
+  {
+    "name_": "Stepan",
+    "phones": ["0998876411"],
+    "birthday": "2000.03.31",
+    "address": "Warsaw",
+    "email": "stepan@outlook.com"
+  },
+  {
+    "name_": "Mavka",
+    "phones": ["0633334455"],
+    "birthday": "2000.03.22",
+    "address": "Uzhhorod",
+    "email": "mavka@gmail.com"
+  },
+  {
+    "name_": "Vitalii",
+    "phones": ["0633330055"],
+    "birthday": "2000.03.23",
+    "address": "Rivne",
+    "email": "vit_3000@gmail.com"
+  },
+  {
+    "name_": "Vitalina",
+    "phones": ["0633330090"],
+    "birthday": "1999.03.29",
+    "address": "Khmelnytskyi",
+    "email": "vital_flower@gmail.com"
   }
 ]
