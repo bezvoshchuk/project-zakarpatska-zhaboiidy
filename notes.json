@@ -16,5 +16,23 @@
     "project_role": "Developer",
     "project_tasks": "CLI Autocomplete, Birthdays for the last n days, bugfixing",
     "hobbies": ["Walking", "Reading"]
+  },
+  {
+    "name_": "Ihor",
+    "project_role": "Solution Architect",
+    "project_tasks": "Software archtecture, search functionality, pair programming",
+    "hobbies": ["Programming", "Reading"]
+  },
+  {
+    "name_": "Viktoriia",
+    "project_role": "Scrum Master",
+    "project_tasks": "Agile processes, CRUDs for address book",
+    "hobbies": ["Swimming", "Photography"]
+  },
+  {
+    "name_": "Bill",
+    "project_role": "Stakeholder",
+    "project_tasks": "Sales",
+    "hobbies": ["Tabletop Games", "Cooking"]
   }
 ]
