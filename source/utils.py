@@ -23,6 +23,9 @@ def get_birthdays_per_days(users_data: list[Record], days) -> dict[str, list[Rec
     result = defaultdict(list)
 
     for record in users_data:
+        if record.birthday.value is None or record.birthday.value == "None":
+            continue
+
         birthday_date = record.birthday.value.replace(year=datetime.datetime.today().date().year)
 
         # Advance by one year if birthday already passed
